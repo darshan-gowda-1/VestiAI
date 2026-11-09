@@ -54,3 +54,4 @@ In accordance with academic integrity and legal compliance guidelines, all machi
    Should VestiAI ever transition toward commercial deployment or SaaS monetization, the pretrained research checkpoints must be replaced with models trained exclusively on proprietary, commercially cleared image datasets with an enterprise commercial agreement.
 3. **Attribution:**
    All papers, model repositories, and baseline architectures are explicitly attributed in both the application documentation and final academic report.
+

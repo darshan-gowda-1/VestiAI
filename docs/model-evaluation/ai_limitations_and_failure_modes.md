@@ -50,3 +50,4 @@ Virtual Try-On models rely on 2D image-to-image conditional diffusion. While the
 | Inpainting blur & noise | Minimum input resolution validation (rejecting images < 512px) with auto-centering. |
 | User expectation mismatch | Prominent UI disclaimer: *"VestiAI provides an AI visual preview for aesthetic evaluation. It does not certify physical fit, sizing, or tailoring."* |
 | Severe model distortion / OOM | Error recovery handlers with friendly retry suggestions and error codes. |
+

@@ -108,3 +108,4 @@ if __name__ == "__main__":
     generate_person()
     generate_garment_01()
     generate_garment_02()
+

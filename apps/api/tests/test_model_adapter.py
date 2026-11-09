@@ -127,3 +127,4 @@ def test_model_factory():
 
     fallback = get_tryon_model("nonexistent-model")
     assert isinstance(fallback, StubTryOnModel)
+

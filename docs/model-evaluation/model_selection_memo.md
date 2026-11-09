@@ -38,3 +38,4 @@ To guarantee that the backend test suite, CI/CD pipelines, and frontend integrat
 
 ## 3. Implementation Contract
 The application will access AI inference solely via the abstract `VirtualTryOnModel` interface defined in `apps/api/app/ai/adapter.py`. The active engine is selected dynamically via the `MODEL_NAME` environment variable (`idm-vton`, `catvton`, or `stub`).
+

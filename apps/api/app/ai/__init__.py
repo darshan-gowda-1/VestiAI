@@ -32,3 +32,4 @@ __all__ = [
     "CatVTONModel",
     "get_tryon_model",
 ]
+

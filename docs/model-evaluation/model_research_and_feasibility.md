@@ -84,3 +84,4 @@ To achieve maximum academic excellence, deployment stability, and reproducibilit
 
 3. **Deterministic Testing Stub (`StubTryOnModel`):**
    - A deterministic, lightweight adapter included in the core test suite to ensure all CI/CD pipelines, backend tests, and UI flows can be executed without requiring a multi-gigabyte GPU checkpoint download.
+

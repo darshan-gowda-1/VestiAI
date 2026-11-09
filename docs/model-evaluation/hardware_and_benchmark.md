@@ -44,3 +44,4 @@ We conducted benchmark trials comparing virtual try-on performance across the lo
    - CatVTON's concatenated single-UNet architecture runs comfortably within the 6 GB RTX 4050 envelope at 512×768 resolution without CPU swapping, completing inference in ~28 seconds.
 4. **Architectural Choice for VestiAI:**
    - The modular adapter (`VirtualTryOnModel`) bridges both engines seamlessly, ensuring students, reviewers, and evaluators can experience either high-fidelity Colab inference or local execution without code refactoring.
+
