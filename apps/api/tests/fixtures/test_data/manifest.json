@@ -1,0 +1,40 @@
+{
+  "test_pairs": [
+    {
+      "id": "pair_001_crewneck_navy",
+      "category": "upper_body",
+      "sub_category": "t-shirt",
+      "person_image": "person_01.png",
+      "garment_image": "garment_01.png",
+      "resolution": "768x1024",
+      "source": "VestiAI Synthetic Benchmark Suite",
+      "license": "CC0 / Public Domain",
+      "usage_permission": "Granted for automated testing and academic evaluation",
+      "attributes": {
+        "gender": "neutral",
+        "pose": "frontal_standing",
+        "garment_color": "Navy Blue",
+        "garment_material": "100% Organic Cotton",
+        "neckline": "Crewneck"
+      }
+    },
+    {
+      "id": "pair_002_oxford_shirt",
+      "category": "upper_body",
+      "sub_category": "shirt",
+      "person_image": "person_01.png",
+      "garment_image": "garment_02.png",
+      "resolution": "768x1024",
+      "source": "VestiAI Synthetic Benchmark Suite",
+      "license": "CC0 / Public Domain",
+      "usage_permission": "Granted for automated testing and academic evaluation",
+      "attributes": {
+        "gender": "neutral",
+        "pose": "frontal_standing",
+        "garment_color": "Classic White",
+        "garment_material": "Oxford Cotton",
+        "neckline": "Button-down collar"
+      }
+    }
+  ]
+}

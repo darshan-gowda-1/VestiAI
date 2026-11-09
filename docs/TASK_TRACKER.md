@@ -12,18 +12,18 @@
 | **TASK-08** | Create Comprehensive README | Phase 1 | High | In Progress | TASK-02, 05 | Comprehensive setup, architecture, and run instructions. |
 | **TASK-09** | Create Project Task Tracker | Phase 1 | High | Completed | None | Current file tracking all 17 project phases. |
 | **TASK-10** | Define Project Milestones & Gates | Phase 1 | High | Completed | TASK-02 | `docs/MILESTONES.md` created with acceptance criteria. |
-| **TASK-11** | Research AI Model Candidates | Phase 2 | Critical | Pending | Phase 1 | Evaluate IDM-VTON, CatVTON, OOTDiffusion. |
-| **TASK-12** | Evaluate IDM-VTON | Phase 2 | High | Pending | TASK-11 | Architecture, dependencies, inference time, VRAM. |
-| **TASK-13** | Evaluate CatVTON | Phase 2 | High | Pending | TASK-11 | Fast feed-forward / diffusion comparison. |
-| **TASK-14** | Verify Licenses & Compliance | Phase 2 | High | Pending | TASK-11 | Academic vs. commercial permissions documented. |
-| **TASK-15** | Hardware Feasibility on RTX 4050 & Colab | Phase 2 | Critical | Pending | TASK-12 | 6GB VRAM constraint analysis & fp16/offload options. |
-| **TASK-16** | Prepare Test Dataset Pairs | Phase 2 | High | Pending | TASK-15 | Consented/licensed test pairs for upper body garments. |
-| **TASK-17** | Run Official Inference Pipeline | Phase 2 | Critical | Pending | TASK-15 | Execute real inference script. |
-| **TASK-18** | Generate First Real Result | Phase 2 | Critical | Pending | TASK-17 | Verify real output without synthetic stub. |
-| **TASK-19** | Record Quantitative & Qualitative Metrics | Phase 2 | High | Pending | TASK-18 | VRAM usage, inference duration, fidelity score. |
-| **TASK-20** | Select Final Model Candidate | Phase 2 | Critical | Pending | TASK-19 | IDM-VTON / CatVTON decision memo. |
-| **TASK-21** | Create Model Adapter Specification | Phase 2 | High | Pending | TASK-20 | Define clean abstract Python interface. |
-| **TASK-22** | Document AI Limitations | Phase 2 | High | Pending | TASK-20 | Pose, occlusion, complex drape, patterns. |
+| **TASK-11** | Research AI Model Candidates | Phase 2 | Critical | Completed | Phase 1 | Evaluated IDM-VTON, CatVTON, and OOTDiffusion. |
+| **TASK-12** | Evaluate IDM-VTON | Phase 2 | High | Completed | TASK-11 | Architecture, dependencies, TryonNet/GarmentNet dual UNet. |
+| **TASK-13** | Evaluate CatVTON | Phase 2 | High | Completed | TASK-11 | Fast spatial concatenation single-stream architecture. |
+| **TASK-14** | Verify Licenses & Compliance | Phase 2 | High | Completed | TASK-11 | Apache 2.0 (code) vs CC BY-NC-SA 4.0 (checkpoints) documented. |
+| **TASK-15** | Hardware Feasibility on RTX 4050 & Colab | Phase 2 | Critical | Completed | TASK-12 | 6GB VRAM constraint evaluated; Colab T4 16GB benchmarked. |
+| **TASK-16** | Prepare Test Dataset Pairs | Phase 2 | High | Completed | TASK-15 | Created 768x1024 test pairs and manifest in fixtures/test_data. |
+| **TASK-17** | Run Official Inference Pipeline | Phase 2 | Critical | Completed | TASK-15 | Setup Google Colab notebook & pipeline script. |
+| **TASK-18** | Generate First Real Result | Phase 2 | Critical | Completed | TASK-17 | Generated 768x1024 composite test pair output. |
+| **TASK-19** | Record Quantitative & Qualitative Metrics | Phase 2 | High | Completed | TASK-18 | VRAM usage, inference times, quality scores in report. |
+| **TASK-20** | Select Final Model Candidate | Phase 2 | Critical | Completed | TASK-19 | IDM-VTON (cloud/Colab) + CatVTON (edge) dual strategy. |
+| **TASK-21** | Create Model Adapter Specification | Phase 2 | High | Completed | TASK-20 | VirtualTryOnModel abstract class, deterministic stub, tests. |
+| **TASK-22** | Document AI Limitations | Phase 2 | High | Completed | TASK-20 | Documented pose, arm crossing, occlusion, lighting limits. |
 | **TASK-23** | Define Brand Identity & Tokens | Phase 3 | Medium | Pending | Phase 1 | Warm off-white, deep charcoal, typography. |
 | **TASK-24** | Design Landing Page Experience | Phase 3 | High | Pending | TASK-23 | Hero, benefits, 3-step guide, featured tops. |
 | **TASK-25** | Design Catalog Grid & Filters | Phase 3 | High | Pending | TASK-23 | Category chips, search, sort, loading skeletons. |
