@@ -24,21 +24,21 @@
 | **TASK-20** | Select Final Model Candidate | Phase 2 | Critical | Completed | TASK-19 | IDM-VTON (cloud/Colab) + CatVTON (edge) dual strategy. |
 | **TASK-21** | Create Model Adapter Specification | Phase 2 | High | Completed | TASK-20 | VirtualTryOnModel abstract class, deterministic stub, tests. |
 | **TASK-22** | Document AI Limitations | Phase 2 | High | Completed | TASK-20 | Documented pose, arm crossing, occlusion, lighting limits. |
-| **TASK-23** | Define Brand Identity & Tokens | Phase 3 | Medium | Pending | Phase 1 | Warm off-white, deep charcoal, typography. |
-| **TASK-24** | Design Landing Page Experience | Phase 3 | High | Pending | TASK-23 | Hero, benefits, 3-step guide, featured tops. |
-| **TASK-25** | Design Catalog Grid & Filters | Phase 3 | High | Pending | TASK-23 | Category chips, search, sort, loading skeletons. |
-| **TASK-26** | Design Product Detail Experience | Phase 3 | High | Pending | TASK-25 | Flat garment view, details, CTA button. |
-| **TASK-27** | Design Try-On Workspace | Phase 3 | Critical | Pending | TASK-23 | Dual pane, consent checkbox, guidance card. |
-| **TASK-28** | Design Image Upload Component | Phase 3 | High | Pending | TASK-27 | Drag-and-drop, preview, replace, crop check. |
-| **TASK-29** | Design Job Processing States | Phase 3 | High | Pending | TASK-27 | Real status polling, estimated time, cancel. |
-| **TASK-30** | Design Result Comparison Screen | Phase 3 | Critical | Pending | TASK-29 | Interactive slider, download, save look, retry. |
-| **TASK-31** | Design History View | Phase 3 | Medium | Pending | TASK-23 | Grid of past tries with timestamp and product. |
-| **TASK-32** | Design Authentication Screens | Phase 3 | Medium | Pending | TASK-23 | Clean login and registration views. |
-| **TASK-33** | Design Profile & Data Controls | Phase 3 | Medium | Pending | TASK-32 | Consent management, delete all data. |
-| **TASK-34** | Design Admin Catalog Dashboard | Phase 3 | Medium | Pending | TASK-23 | Add product modal, active toggle, job log. |
-| **TASK-35** | Responsive Layout Specifications | Phase 3 | High | Pending | TASK-24..34 | Mobile first, tablet breakpoint, desktop layout. |
-| **TASK-36** | Component Library Specifications | Phase 3 | High | Pending | TASK-23 | Buttons, inputs, modals, toasts, skeletons. |
-| **TASK-37** | Design Consistency Review | Phase 3 | High | Pending | TASK-36 | Review all views before code implementation. |
+| **TASK-23** | Define Brand Identity & Tokens | Phase 3 | Medium | Completed | Phase 1 | Warm off-white, deep charcoal, typography, tokens defined. |
+| **TASK-24** | Design Landing Page Experience | Phase 3 | High | Completed | TASK-23 | Wireframe & spec in docs/architecture/wireframes_and_screens.md. |
+| **TASK-25** | Design Catalog Grid & Filters | Phase 3 | High | Completed | TASK-23 | Responsive grid, category chips, sort, skeleton specs. |
+| **TASK-26** | Design Product Detail Experience | Phase 3 | High | Completed | TASK-25 | Large view, colorways, specs, Try This On CTA. |
+| **TASK-27** | Design Try-On Workspace | Phase 3 | Critical | Completed | TASK-23 | Dual pane, consent checkbox, guidance card specs. |
+| **TASK-28** | Design Image Upload Component | Phase 3 | High | Completed | TASK-27 | Drag-and-drop, client preview, replace/remove specs. |
+| **TASK-29** | Design Job Processing States | Phase 3 | High | Completed | TASK-27 | Queued, processing, completed, failed state specs. |
+| **TASK-30** | Design Result Comparison Screen | Phase 3 | Critical | Completed | TASK-29 | Interactive slider, download, save look, retry specs. |
+| **TASK-31** | Design History & Wishlist Views | Phase 3 | Medium | Completed | TASK-23 | Past tries grid with timestamps, wishlist cards. |
+| **TASK-32** | Design Authentication Screens | Phase 3 | Medium | Completed | TASK-23 | Clean login and registration views with validation specs. |
+| **TASK-33** | Design Profile & Data Controls | Phase 3 | Medium | Completed | TASK-32 | Consent management, permanent media deletion dialog. |
+| **TASK-34** | Design Admin Catalog Dashboard | Phase 3 | Medium | Completed | TASK-23 | Product CRUD, active toggle, job monitor specs. |
+| **TASK-35** | Responsive Layout Specifications | Phase 3 | High | Completed | TASK-24..34 | Mobile (375px), Tablet (768px), Desktop (1280px) breakpoints. |
+| **TASK-36** | Component Library Specifications & Code | Phase 3 | High | Completed | TASK-23 | Built Button, Card, Badge, Input, Skeleton, Dialog, Slider in apps/web/src/components/ui. |
+| **TASK-37** | Design Consistency & Accessibility Review | Phase 3 | High | Completed | TASK-36 | Contrast ratio audit (WCAG AA) & error states (S12). |
 | **TASK-38** | Initialize React TypeScript Frontend | Phase 4 | Critical | Pending | Phase 3 | Vite setup, Tailwind tokens, directory scaffold. |
 | **TASK-39** | Implement React Router Routing | Phase 4 | High | Pending | TASK-38 | Client routes with protected guard wrappers. |
 | **TASK-40** | Implement Global Theme & Typography | Phase 4 | High | Pending | TASK-38 | Tailwind theme matching design tokens. |
