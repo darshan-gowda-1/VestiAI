@@ -128,3 +128,4 @@ This document specifies the wireframes, components, user actions, and state tran
 - **413 Payload Too Large:** "Image exceeds 10 MB limit. Please choose a smaller photo."
 - **422 Unsupported Pose/Category:** "Garment category must be an upper-body top. Please select a t-shirt or shirt."
 - **500 Worker Error:** "AI model timed out or encountered an issue. Please retry."
+

@@ -80,3 +80,4 @@ All primary text and interactive combinations have been audited to surpass WCAG 
 - **Alt Text:** Every product image and user preview provides descriptive alt tags.
 - **Semantic Structure:** Clear `<header>`, `<nav>`, `<main>`, `<section>`, `<footer>` markup.
 - **Touch Targets:** Minimum 44×44px hit areas on mobile viewports.
+

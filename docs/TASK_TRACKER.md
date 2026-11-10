@@ -39,27 +39,27 @@
 | **TASK-35** | Responsive Layout Specifications | Phase 3 | High | Completed | TASK-24..34 | Mobile (375px), Tablet (768px), Desktop (1280px) breakpoints. |
 | **TASK-36** | Component Library Specifications & Code | Phase 3 | High | Completed | TASK-23 | Built Button, Card, Badge, Input, Skeleton, Dialog, Slider in apps/web/src/components/ui. |
 | **TASK-37** | Design Consistency & Accessibility Review | Phase 3 | High | Completed | TASK-36 | Contrast ratio audit (WCAG AA) & error states (S12). |
-| **TASK-38** | Initialize React TypeScript Frontend | Phase 4 | Critical | Pending | Phase 3 | Vite setup, Tailwind tokens, directory scaffold. |
-| **TASK-39** | Implement React Router Routing | Phase 4 | High | Pending | TASK-38 | Client routes with protected guard wrappers. |
-| **TASK-40** | Implement Global Theme & Typography | Phase 4 | High | Pending | TASK-38 | Tailwind theme matching design tokens. |
-| **TASK-41** | Implement Navigation Bar | Phase 4 | High | Pending | TASK-40 | Brand logo, links, auth state, responsive mobile drawer. |
-| **TASK-42** | Implement Global Footer | Phase 4 | Medium | Pending | TASK-40 | Brand story, disclaimer, privacy links. |
-| **TASK-43** | Implement Core Reusable Components | Phase 4 | High | Pending | TASK-40 | Button, Card, Dialog, Toast, Badge, Input. |
-| **TASK-44** | Implement Landing Page Component | Phase 4 | High | Pending | TASK-41, 43 | Complete responsive landing page. |
-| **TASK-45** | Implement Catalog Browsing Page | Phase 4 | High | Pending | TASK-43 | Search, category filtering, sort controls. |
-| **TASK-46** | Implement Product Card Component | Phase 4 | High | Pending | TASK-43 | Image with fallback, tags, price, Try-On trigger. |
-| **TASK-47** | Implement Product Detail Page | Phase 4 | High | Pending | TASK-45 | Large view, colorways, specification, direct try-on. |
-| **TASK-48** | Implement Try-On Workspace Page | Phase 4 | Critical | Pending | TASK-43 | Full workflow UI with garment selection. |
-| **TASK-49** | Implement Person Image Uploader | Phase 4 | Critical | Pending | TASK-48 | File selector, drag-and-drop, instant client preview. |
-| **TASK-50** | Implement Garment Selector Modal | Phase 4 | High | Pending | TASK-48 | Quick garment picker from catalog. |
-| **TASK-51** | Implement Image Replace/Remove Actions | Phase 4 | High | Pending | TASK-49 | Reset and replace before job submission. |
-| **TASK-52** | Implement Loading, Error & Empty States | Phase 4 | High | Pending | TASK-48 | Shimmer skeletons, friendly error banners. |
-| **TASK-53** | Implement Result Display Component | Phase 4 | Critical | Pending | TASK-48 | Side-by-side and overlay view. |
-| **TASK-54** | Implement Interactive Before/After Comparison | Phase 4 | High | Pending | TASK-53 | Split slider interaction for easy comparison. |
-| **TASK-55** | Implement History UI | Phase 4 | Medium | Pending | TASK-43 | List previous try-on runs. |
-| **TASK-56** | Implement Profile & Settings UI | Phase 4 | Medium | Pending | TASK-43 | Account information and privacy controls. |
-| **TASK-57** | Verify Responsive Layout Across Breakpoints | Phase 4 | High | Pending | TASK-44..56 | Mobile (375px), Tablet (768px), Desktop (1280px). |
-| **TASK-58** | Frontend Build & Verification | Phase 4 | Critical | Pending | TASK-57 | `npm run build` verification and linting. |
+| **TASK-38** | Initialize React TypeScript Frontend | Phase 4 | Critical | Completed | Phase 3 | Vite setup, Tailwind tokens, directory scaffold. |
+| **TASK-39** | Implement React Router Routing | Phase 4 | High | Completed | TASK-38 | Client routes (Home, Catalog, Detail, TryOn, Result, History, Wishlist, Auth, Profile, Admin). |
+| **TASK-40** | Implement Global Theme & Typography | Phase 4 | High | Completed | TASK-38 | Warm off-white canvas, deep charcoal, terracotta accent tokens. |
+| **TASK-41** | Implement Navigation Bar | Phase 4 | High | Completed | TASK-40 | Brand wordmark, active links, responsive mobile drawer, session state. |
+| **TASK-42** | Implement Global Footer | Phase 4 | Medium | Completed | TASK-40 | Editorial footer with academic scope notice and disclaimers. |
+| **TASK-43** | Implement Core Reusable Components | Phase 4 | High | Completed | TASK-40 | Button, Card, Badge, Input, Skeleton, Dialog, ComparisonSlider. |
+| **TASK-44** | Implement Landing Page Component | Phase 4 | High | Completed | TASK-41, 43 | Complete responsive landing page (Hero, 3-step guide, featured tops, trust badges). |
+| **TASK-45** | Implement Catalog Browsing Page | Phase 4 | High | Completed | TASK-43 | Search, category filtering, sort controls, empty and loading states. |
+| **TASK-46** | Implement Product Card Component | Phase 4 | High | Completed | TASK-43 | Image with fallback, tags, demo price, Try-On trigger, wishlist heart. |
+| **TASK-47** | Implement Product Detail Page | Phase 4 | High | Completed | TASK-45 | Large view, colorways, specifications, direct Try-On action. |
+| **TASK-48** | Implement Try-On Workspace Page | Phase 4 | Critical | Completed | TASK-43 | Dual-pane workspace with person photo, garment preview, and consent. |
+| **TASK-49** | Implement Person Image Uploader | Phase 4 | Critical | Completed | TASK-48 | Drag-and-drop, client file validation, instant preview. |
+| **TASK-50** | Implement Garment Selector Modal | Phase 4 | High | Completed | TASK-48 | Modal catalog picker to switch tops directly in workspace. |
+| **TASK-51** | Implement Image Replace/Remove Actions | Phase 4 | High | Completed | TASK-49 | Replace and delete actions for user photograph. |
+| **TASK-52** | Implement Loading, Error & Empty States | Phase 4 | High | Completed | TASK-48 | JobProgressView with real queued/processing stages, empty states. |
+| **TASK-53** | Implement Result Display Component | Phase 4 | Critical | Completed | TASK-48 | ResultPage with AI preview badge and download action. |
+| **TASK-54** | Implement Interactive Before/After Comparison | Phase 4 | High | Completed | TASK-53 | ComparisonSlider with draggable divider and touch support. |
+| **TASK-55** | Implement History UI | Phase 4 | Medium | Completed | TASK-43 | Grid of past try-on runs with timestamps and view/delete actions. |
+| **TASK-56** | Implement Profile & Settings UI | Phase 4 | Medium | Completed | TASK-43 | Profile page with consent toggle and permanent data erasure. |
+| **TASK-57** | Verify Responsive Layout Across Breakpoints | Phase 4 | High | Completed | TASK-44..56 | Verified across mobile (375px), tablet (768px), and desktop (1280px). |
+| **TASK-58** | Frontend Build & Verification | Phase 4 | Critical | Completed | TASK-57 | npm run lint (tsc --noEmit) & npm run build verified with zero errors. |
 | **TASK-59** | Initialize FastAPI Core Application | Phase 5 | Critical | Pending | Phase 1 | FastAPI app setup, lifecycle events. |
 | **TASK-60** | Implement Environment Settings | Phase 5 | High | Pending | TASK-59 | Pydantic Settings with .env parsing. |
 | **TASK-61** | Configure CORS & Security Middlewares | Phase 5 | High | Pending | TASK-60 | Allow origins, trusted host, secure headers. |
