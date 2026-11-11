@@ -72,3 +72,4 @@ def ensure_owner_or_admin(owner_id: Optional[uuid.UUID], current_user: User) -> 
         return
     if owner_id is None or owner_id != current_user.id:
         raise ForbiddenError("You do not have permission to access this resource.")
+

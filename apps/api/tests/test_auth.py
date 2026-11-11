@@ -200,3 +200,4 @@ def test_role_guard_and_data_ownership_isolation():
 
     # Admin allowed across users
     ensure_owner_or_admin(user_b.id, admin)
+

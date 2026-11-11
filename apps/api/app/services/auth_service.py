@@ -66,3 +66,4 @@ class AuthService:
         if "full_name" in fields_set:
             return await UserRepository.update_profile(db, user, full_name=payload.full_name)
         return user
+

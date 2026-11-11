@@ -17,3 +17,4 @@ class TokenResponse(BaseModel):
 
 class LogoutResponse(BaseModel):
     message: str
+

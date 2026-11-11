@@ -27,3 +27,4 @@ async def update_my_profile(
     """Update safe profile fields for the authenticated user."""
     updated = await AuthService.update_user_profile(db, current_user, payload)
     return UserResponse.model_validate(updated)
+

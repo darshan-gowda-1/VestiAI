@@ -90,6 +90,20 @@
 | **TASK-86** | Password Reset Scope Check | Phase 6 | Low | Excluded | None | Explicitly omitted per spec (no real email server configured). |
 | **TASK-87** | Implement Data Ownership Guard | Phase 6 | High | Completed | TASK-82 | `ensure_owner_or_admin` enforcing strict cross-user isolation. |
 | **TASK-88** | Authentication & Authorization Tests | Phase 6 | Critical | Completed | TASK-77..87 | 5 tests in `tests/test_auth.py` verifying register/login/logout/ownership. |
-| **TASK-89..209** | Phases 7 through 14 (Catalog, Storage, AI Pipeline, Worker, Integration, Admin, Security, QA, Deployment) | Phases 7-14 | High | Scheduled | Phase 6 | Detailed tickets defined in blueprint. |
+| **TASK-89** | Product Categories (Tops) | Phase 7 | High | Completed | Phase 5 | `t-shirt`, `shirt`, `sweatshirt`, `blouse` validated via schemas. |
+| **TASK-90** | Product Attributes | Phase 7 | High | Completed | TASK-89 | Title, brand, description, category, color, price, material, fit, keys. |
+| **TASK-91** | Product CRUD APIs | Phase 7 | Critical | Completed | Phase 6 | `POST/PATCH/DELETE /api/v1/admin/products` with role guards & audit logs. |
+| **TASK-92** | Paginated Product Listing | Phase 7 | High | Completed | TASK-90 | `GET /api/v1/products` with `page`, `limit`, `PaginationMeta`. |
+| **TASK-93** | Product Detail API | Phase 7 | High | Completed | TASK-90 | `GET /api/v1/products/{id}` hiding archived items from shoppers. |
+| **TASK-94** | Category Filtering | Phase 7 | High | Completed | TASK-92 | Query parameter filtering across upper-body categories. |
+| **TASK-95** | Search and Sorting | Phase 7 | High | Completed | TASK-92 | Case-insensitive search + sort (`featured`, `price_asc`, `price_desc`, `newest`, `title`). |
+| **TASK-96** | Sample Catalog Data & Seeder | Phase 7 | High | Completed | TASK-91 | 12 realistic tops in `CatalogService.seed_sample_catalog` & `scripts/seed_catalog.py`. |
+| **TASK-97** | Documented Garment Image Sources | Phase 7 | Medium | Completed | TASK-96 | `docs/architecture/asset_manifest.md` + synthetic CC0 asset generator. |
+| **TASK-98** | Object Storage Abstraction | Phase 7 | Critical | Completed | Phase 5 | `LocalStorageBackend` & `S3StorageBackend` in `app/services/storage_service.py`. |
+| **TASK-99** | Secure Image Upload APIs | Phase 7 | Critical | Completed | TASK-98 | `/api/v1/media/uploads` (user) and `/api/v1/admin/products/{id}/image` (admin). |
+| **TASK-100** | Strict Image Validation & Sanitization | Phase 7 | Critical | Completed | TASK-99 | MIME, extension, max size, Pillow decode, dimensions, EXIF transpose & strip. |
+| **TASK-101** | Signed URLs for Private Media | Phase 7 | Critical | Completed | TASK-98 | HMAC-SHA256 expiring signed URLs (local) / S3 presigned URLs. |
+| **TASK-102** | Expired Media Retention Cleanup | Phase 7 | High | Completed | TASK-98 | `cleanup_expired_objects` & `scripts/cleanup_media.py` verified via tests. |
+| **TASK-103..209** | Phases 8 through 14 (AI Pipeline, Worker, Integration, Admin, Security, QA, Deployment) | Phases 8-14 | High | Scheduled | Phase 7 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

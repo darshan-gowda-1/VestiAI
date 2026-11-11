@@ -46,6 +46,24 @@ class BadRequestError(AppError):
         super().__init__(code=code, message=message, status_code=status.HTTP_400_BAD_REQUEST)
 
 
+class PayloadTooLargeError(AppError):
+    def __init__(self, message: str = "Uploaded file exceeds maximum allowed size."):
+        super().__init__(
+            code="PAYLOAD_TOO_LARGE",
+            message=message,
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        )
+
+
+class UnprocessableEntityError(AppError):
+    def __init__(self, code: str = "INVALID_IMAGE", message: str = "Uploaded file could not be processed."):
+        super().__init__(
+            code=code,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
 def _get_request_id(request: Request) -> str:
     return getattr(request.state, "request_id", "unknown")
 
