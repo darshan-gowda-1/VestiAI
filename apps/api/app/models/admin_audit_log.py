@@ -28,3 +28,4 @@ class AdminAuditLog(Base):
 
     # Relationships
     admin: Mapped[Optional["User"]] = relationship(back_populates="audit_logs")
+

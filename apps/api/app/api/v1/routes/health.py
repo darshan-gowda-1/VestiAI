@@ -24,3 +24,4 @@ async def api_v1_health_check() -> HealthResponse:
         model_configured=settings.MODEL_NAME,
         timestamp=datetime.now(timezone.utc),
     )
+

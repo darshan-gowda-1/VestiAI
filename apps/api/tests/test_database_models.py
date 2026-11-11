@@ -196,3 +196,4 @@ def test_pydantic_validation_schemas():
 
     with pytest.raises(Exception):
         UserCreate(email="not-an-email", password="short")
+

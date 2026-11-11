@@ -10,3 +10,4 @@ def utc_now() -> datetime:
 class Base(DeclarativeBase):
     """Base SQLAlchemy 2.0 declarative class for all VestiAI ORM models."""
     pass
+

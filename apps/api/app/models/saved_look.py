@@ -32,3 +32,4 @@ class SavedLook(Base):
     # Relationships
     user: Mapped["User"] = relationship(back_populates="saved_looks")
     job: Mapped["TryOnJob"] = relationship(back_populates="saved_looks")
+

@@ -55,3 +55,4 @@ class ProductResponse(ProductBase):
 class ProductListResponse(BaseModel):
     items: List[ProductResponse]
     meta: PaginationMeta
+

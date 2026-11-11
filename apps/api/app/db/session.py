@@ -51,3 +51,4 @@ async def check_database_connection(target_engine: AsyncEngine | None = None) ->
         return True, "connected"
     except Exception as exc:
         return False, f"unavailable ({type(exc).__name__})"
+

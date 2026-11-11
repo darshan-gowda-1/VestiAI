@@ -44,3 +44,4 @@ class Product(Base):
     wishlist_items: Mapped[List["WishlistItem"]] = relationship(
         back_populates="product", cascade="all, delete-orphan"
     )
+

@@ -32,3 +32,4 @@ class WishlistItem(Base):
     # Relationships
     user: Mapped["User"] = relationship(back_populates="wishlist_items")
     product: Mapped["Product"] = relationship(back_populates="wishlist_items")
+

@@ -23,3 +23,4 @@ class UserResponse(BaseModel):
     role: str
     created_at: datetime
     disabled_at: Optional[datetime] = None
+

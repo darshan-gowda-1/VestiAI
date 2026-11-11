@@ -20,3 +20,4 @@ def configure_logging(debug: bool = False) -> logging.Logger:
 
 
 logger = configure_logging()
+

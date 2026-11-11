@@ -15,3 +15,4 @@ __all__ = [
     "ConsentRecord",
     "AdminAuditLog",
 ]
+

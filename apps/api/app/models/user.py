@@ -40,3 +40,4 @@ class User(Base):
     )
     consent_records: Mapped[List["ConsentRecord"]] = relationship(back_populates="user")
     audit_logs: Mapped[List["AdminAuditLog"]] = relationship(back_populates="admin")
+

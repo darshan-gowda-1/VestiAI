@@ -14,3 +14,4 @@ class AdminAuditLogResponse(BaseModel):
     entity_id: str
     summary: Optional[str] = None
     created_at: datetime
+

@@ -78,6 +78,18 @@
 | **TASK-74** | Implement Global Exception Handlers | Phase 5 | High | Completed | TASK-59 | Consistent `{code, message, request_id}` error responses. |
 | **TASK-75** | Implement Pydantic Request/Response Schemas | Phase 5 | High | Completed | TASK-65..71 | Strict schemas in `app/schemas/` verified via unit tests. |
 | **TASK-76** | Verify Interactive API Documentation | Phase 5 | Medium | Completed | TASK-73..75 | Verified `/docs`, `/redoc`, `/openapi.json` return HTTP 200. |
-| **TASK-77..209** | Phases 6 through 14 (Auth, Catalog, Storage, AI Pipeline, Worker, Integration, Admin, Security, QA, Deployment) | Phases 6-14 | High | Scheduled | Phase 5 | Detailed tickets defined in blueprint. |
+| **TASK-77** | Implement User Registration | Phase 6 | Critical | Completed | Phase 5 | `POST /api/v1/auth/register` with email normalization & conflict check. |
+| **TASK-78** | Implement Password Hashing | Phase 6 | High | Completed | TASK-77 | `passlib[bcrypt]` hashing & constant-time verification. |
+| **TASK-79** | Implement Login Endpoint | Phase 6 | Critical | Completed | TASK-78 | `POST /api/v1/auth/login` verifying credentials & disabled status. |
+| **TASK-80** | Implement JWT Token Handling | Phase 6 | High | Completed | TASK-79 | Signed HS256 JWT with `sub`, `role`, `jti`, `iat`, `exp`. |
+| **TASK-81** | Implement Logout & Session Invalidation | Phase 6 | High | Completed | TASK-80 | `POST /api/v1/auth/logout` revoking `jti` via Redis/in-memory blocklist. |
+| **TASK-82** | Implement Auth & Role Dependencies | Phase 6 | High | Completed | TASK-80 | `get_current_user`, `get_optional_current_user`, `require_admin`. |
+| **TASK-83** | Implement Current User Endpoint | Phase 6 | High | Completed | TASK-82 | `GET /api/v1/auth/me` returning active user profile. |
+| **TASK-84** | Implement Profile Retrieval | Phase 6 | Medium | Completed | TASK-82 | `GET /api/v1/users/me` returning authenticated profile. |
+| **TASK-85** | Implement Profile Update | Phase 6 | Medium | Completed | TASK-84 | `PATCH /api/v1/users/me` updating safe fields (`full_name`). |
+| **TASK-86** | Password Reset Scope Check | Phase 6 | Low | Excluded | None | Explicitly omitted per spec (no real email server configured). |
+| **TASK-87** | Implement Data Ownership Guard | Phase 6 | High | Completed | TASK-82 | `ensure_owner_or_admin` enforcing strict cross-user isolation. |
+| **TASK-88** | Authentication & Authorization Tests | Phase 6 | Critical | Completed | TASK-77..87 | 5 tests in `tests/test_auth.py` verifying register/login/logout/ownership. |
+| **TASK-89..209** | Phases 7 through 14 (Catalog, Storage, AI Pipeline, Worker, Integration, Admin, Security, QA, Deployment) | Phases 7-14 | High | Scheduled | Phase 6 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

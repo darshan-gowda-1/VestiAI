@@ -64,3 +64,4 @@ class ConsentRecordResponse(BaseModel):
     consent_version: str
     consent_at: datetime
     purpose: str
+

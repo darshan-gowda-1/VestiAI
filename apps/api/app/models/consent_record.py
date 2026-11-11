@@ -31,3 +31,4 @@ class ConsentRecord(Base):
     # Relationships
     user: Mapped[Optional["User"]] = relationship(back_populates="consent_records")
     job: Mapped["TryOnJob"] = relationship(back_populates="consent_records")
+
