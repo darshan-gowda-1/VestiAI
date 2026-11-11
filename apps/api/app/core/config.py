@@ -49,8 +49,10 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str = "postgresql://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
     DB_ECHO: bool = False
 
-    # Redis Queue
+    # Redis Queue & Worker
     REDIS_URL: str = "redis://localhost:6379/0"
+    WORKER_AUTO_DISPATCH: bool = False
+    MAX_JOB_RETRIES: int = 2
 
     # Storage
     STORAGE_BACKEND: str = "local"  # 'local' or 's3'

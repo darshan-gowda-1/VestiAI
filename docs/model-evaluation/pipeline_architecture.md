@@ -41,3 +41,4 @@ StorageBackend (person_key, garment_key)
 
 ## 3. Pipeline Latency Breakdown
 Every execution of `TryOnPipelineService.run()` records real millisecond timings (`preprocess_ms`, `inference_ms`, `postprocess_ms`, `total_ms`) in `TryOnPipelineOutput`. On CPU using `StubTryOnModel` at `768x1024`, preprocessing + compositing + PNG encoding completes in ~180–280 ms. On Google Colab T4 GPU using `IDM-VTON`, total pipeline latency is ~36.5 s.
+

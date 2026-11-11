@@ -186,3 +186,4 @@ def test_remote_colab_adapter(monkeypatch):
         assert res.model_name == "remote-gpu-worker"
         assert res.output_image.size == (768, 1024)
         assert res.is_simulated is False
+

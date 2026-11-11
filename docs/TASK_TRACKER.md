@@ -122,6 +122,19 @@
 | **TASK-118** | Pose & Garment Category Testing | Phase 8 | High | Completed | TASK-117 | Tested wide/square/portrait ratios and all 4 top categories. |
 | **TASK-119** | Invalid Input, OOM & Timeout Testing | Phase 8 | Critical | Completed | TASK-113, 114 | 5 tests in `tests/test_ai_pipeline.py` verifying failure paths. |
 | **TASK-120** | Document Pipeline Architecture & Limits | Phase 8 | Medium | Completed | TASK-117 | `docs/model-evaluation/pipeline_architecture.md`. |
-| **TASK-121..209** | Phases 9 through 14 (Worker, Integration, Admin, Security, QA, Deployment) | Phases 9-14 | High | Scheduled | Phase 8 | Detailed tickets defined in blueprint. |
+| **TASK-121** | Select Async Queue Architecture | Phase 9 | Critical | Completed | Phase 8 | Redis queue with DB-backed & in-memory fallback (`app/workers/queue.py`). |
+| **TASK-122** | Configure Queue & Standalone Worker | Phase 9 | Critical | Completed | TASK-121 | `app/workers/tryon_worker.py` standalone loop & processor. |
+| **TASK-123** | Implement Job Creation API | Phase 9 | Critical | Completed | Phase 7, 122 | `POST /api/v1/tryon/jobs` returning `202 Accepted` + consent record. |
+| **TASK-124** | Implement Job Status, History & Delete APIs | Phase 9 | Critical | Completed | TASK-123 | `GET/DELETE /api/v1/tryon/jobs/{id}` & paginated `GET /api/v1/tryon/jobs`. |
+| **TASK-125** | Enforce Job State Transitions | Phase 9 | High | Completed | TASK-123 | `validate_job_transition` (`queued`, `processing`, `completed`, `failed`, `cancelled`). |
+| **TASK-126** | Implement Worker Input Retrieval | Phase 9 | High | Completed | TASK-122 | Worker loads `TryOnJob` and reads private person & garment keys. |
+| **TASK-127** | Connect Worker to AI Pipeline | Phase 9 | Critical | Completed | Phase 8, 126 | Worker executes `TryOnPipelineService.run(...)`. |
+| **TASK-128** | Persist Output & Update Job Status | Phase 9 | High | Completed | TASK-127 | Stores `result_image_key`, `processing_time_ms`, and signed `result_url`. |
+| **TASK-129** | Support Polling Status Updates | Phase 9 | High | Completed | TASK-124 | `GET /api/v1/tryon/jobs/{id}` returns signed `result_url` only when completed. |
+| **TASK-130** | Implement Recoverable Retry Policy | Phase 9 | High | Completed | TASK-127 | Retries transient `INFERENCE_TIMEOUT`/`REMOTE_ERROR` up to `MAX_JOB_RETRIES`. |
+| **TASK-131** | Implement Safe Job Cancellation | Phase 9 | Medium | Completed | TASK-125 | `POST /api/v1/tryon/jobs/{id}/cancel` + worker mid-flight discard. |
+| **TASK-132** | Implement Duplicate Submission Prevention | Phase 9 | High | Completed | TASK-123 | `Idempotency-Key` + SHA-256 content-hash deduplication. |
+| **TASK-133** | Implement & Test Worker Reliability | Phase 9 | Critical | Completed | TASK-122..132 | Stale processing job crash recovery + 4 test suites in `tests/test_jobs_and_worker.py`. |
+| **TASK-134..209** | Phases 10 through 14 (Integration, Admin, Security, QA, Deployment) | Phases 10-14 | High | Scheduled | Phase 9 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

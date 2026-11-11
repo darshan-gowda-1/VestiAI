@@ -22,6 +22,7 @@ class TryOnJobResponse(BaseModel):
     status: JobStatusType
     category: str
     model_name: str
+    person_image_url: Optional[str] = None
     result_url: Optional[str] = None
     error_code: Optional[str] = None
     error_message: Optional[str] = None

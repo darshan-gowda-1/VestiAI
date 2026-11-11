@@ -105,3 +105,4 @@ def postprocess_output_image(
     buf = BytesIO()
     rgb.save(buf, format="PNG", optimize=True)
     return buf.getvalue()
+

@@ -170,3 +170,4 @@ class TryOnPipelineService:
                 error_code="PIPELINE_INTERNAL_ERROR",
                 error_message="Virtual try-on processing failed unexpectedly. Please retry.",
             )
+
