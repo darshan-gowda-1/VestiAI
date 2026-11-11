@@ -164,6 +164,19 @@
 | **TASK-160** | Admin Usage Statistics | Phase 11 | High | Completed | TASK-156 | `GET /api/v1/admin/stats` computing real DB counts & avg latency. |
 | **TASK-161** | Admin Audit Logs | Phase 11 | Medium | Completed | TASK-156 | `GET /api/v1/admin/audit-logs` & Audit Logs tab in `AdminPage`. |
 | **TASK-162** | Admin & Collections Security Tests | Phase 11 | Critical | Completed | TASK-156..161 | `tests/test_admin_and_collections.py` verified 401/403 & minimal PII. |
-| **TASK-163..209** | Phases 12 through 14 (Security, QA, Deployment) | Phases 12-14 | High | Scheduled | Phase 11 | Detailed tickets defined in blueprint. |
+| **TASK-163** | Require & Audit Explicit Consent | Phase 12 | Critical | Completed | Phase 9 | Mandatory `consent=true` + `GET /api/v1/users/me/consents`. |
+| **TASK-164** | Publish Privacy & Image Use Explanation | Phase 12 | High | Completed | TASK-163 | `PrivacyPage.tsx` at `/privacy` linked from footer. |
+| **TASK-165** | Define Image Retention Policy | Phase 12 | High | Completed | Phase 7 | `docs/architecture/privacy_and_security_policy.md` + 7-day cleanup. |
+| **TASK-166** | Enforce Private Media Storage | Phase 12 | Critical | Completed | Phase 7 | Path-traversal guards & HMAC signed URLs for private folders. |
+| **TASK-167** | Enforce User Ownership Isolation | Phase 12 | Critical | Completed | Phase 6 | `ensure_owner_or_admin` & admin PII minimization verified. |
+| **TASK-168** | Input Sanitization & Security Headers | Phase 12 | High | Completed | Phase 7 | `nosniff`, `DENY`, `Referrer-Policy`, `Permissions-Policy`, EXIF strip. |
+| **TASK-169** | Enforce Upload Size & Dimension Limits | Phase 12 | High | Completed | Phase 7 | `UPLOAD_MAX_MB` (413) & `128..4096` dimensions enforced. |
+| **TASK-170** | Implement Rate Limiting | Phase 12 | Critical | Completed | Phase 5 | `SlidingWindowRateLimiter` on `/auth/*`, `/media/uploads`, `/tryon/jobs` (429). |
+| **TASK-171** | Protect Secrets & Production Guards | Phase 12 | Critical | Completed | Phase 1 | `lifespan` rejects default `AUTH_SECRET_KEY` in production. |
+| **TASK-172** | Privacy-Safe Logging & Redaction | Phase 12 | High | Completed | Phase 5 | `redact_sensitive_text` strips `sig=`, `token=`, `password=`. |
+| **TASK-173** | Review Model & Asset Licenses | Phase 12 | High | Completed | Phase 2, 7 | Audited MIT, Apache 2.0, CC BY-NC-SA 4.0, CC0 assets. |
+| **TASK-174** | Document Responsible Use & Limitations | Phase 12 | High | Completed | TASK-164 | Documented in policy & `/privacy` page. |
+| **TASK-175** | Security & Privacy Test Suite | Phase 12 | Critical | Completed | TASK-163..174 | `tests/test_security_and_privacy.py` verified headers, 429, consents, secret guard. |
+| **TASK-176..209** | Phases 13 through 14 (QA & Deployment) | Phases 13-14 | High | Scheduled | Phase 12 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

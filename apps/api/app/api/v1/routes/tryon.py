@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
 from app.core.config import settings
+from app.core.rate_limit import rate_limit_tryon
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.tryon import (
@@ -33,6 +34,7 @@ router = APIRouter(prefix="/tryon", tags=["Virtual Try-On Jobs"])
     "/jobs",
     response_model=TryOnJobCreateResponse,
     status_code=status.HTTP_202_ACCEPTED,
+    dependencies=[Depends(rate_limit_tryon)],
 )
 async def create_tryon_job(
     background_tasks: BackgroundTasks,

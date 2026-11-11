@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_token_payload, get_current_user
+from app.core.rate_limit import rate_limit_auth
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.auth import LoginRequest, LogoutResponse, TokenResponse
@@ -13,7 +14,12 @@ from app.services.auth_service import AuthService
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=TokenResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(rate_limit_auth)],
+)
 async def register(
     payload: UserCreate,
     db: AsyncSession = Depends(get_db),
@@ -22,7 +28,11 @@ async def register(
     return await AuthService.register_user(db, payload)
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    dependencies=[Depends(rate_limit_auth)],
+)
 async def login(
     payload: LoginRequest,
     db: AsyncSession = Depends(get_db),

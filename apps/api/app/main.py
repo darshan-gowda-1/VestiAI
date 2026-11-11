@@ -17,6 +17,13 @@ from app.schemas.common import ErrorResponse
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging(debug=settings.DEBUG)
+    if (
+        settings.ENVIRONMENT.lower() == "production"
+        and settings.AUTH_SECRET_KEY.startswith("change_this_")
+    ):
+        raise RuntimeError(
+            "Insecure default AUTH_SECRET_KEY detected in production environment."
+        )
     logger.info("Starting %s in %s mode", settings.APP_NAME, settings.ENVIRONMENT)
     yield
     await engine.dispose()
@@ -64,6 +71,10 @@ async def request_id_and_logging_middleware(request: Request, call_next):
 
     duration_ms = (time.perf_counter() - start_time) * 1000.0
     response.headers["X-Request-ID"] = request_id
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     logger.info(
         "request_id=%s method=%s path=%s status=%s duration_ms=%.2f",
         request_id,

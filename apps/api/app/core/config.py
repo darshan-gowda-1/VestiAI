@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     AUTH_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
+    # Rate Limiting
+    RATE_LIMIT_ENABLED: bool = True
+    RATE_LIMIT_AUTH_PER_MINUTE: int = 20
+    RATE_LIMIT_TRYON_PER_MINUTE: int = 10
+
     # CORS
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",

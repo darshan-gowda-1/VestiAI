@@ -79,7 +79,12 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/profile" className="hover:text-charcoal transition-colors">
-                  Privacy & Data Deletion
+                  Data Controls & Erasure
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:text-charcoal transition-colors">
+                  Privacy & Responsible AI
                 </Link>
               </li>
             </ul>

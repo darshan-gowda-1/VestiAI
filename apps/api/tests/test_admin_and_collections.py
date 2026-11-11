@@ -204,3 +204,4 @@ async def test_collections_ownership_and_bulk_user_purge(admin_env):
     # User B's job remains intact
     b_hist = await client.get("/api/v1/tryon/jobs", headers=headers_b)
     assert b_hist.json()["meta"]["total"] == 1
+

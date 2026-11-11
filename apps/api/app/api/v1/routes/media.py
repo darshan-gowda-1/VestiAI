@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from app.api.deps import get_current_user
 from app.core.exceptions import ForbiddenError
+from app.core.rate_limit import rate_limit_tryon
 from app.models.user import User
 from app.services.image_validation import validate_and_sanitize_image
 from app.services.storage_service import LocalStorageBackend, get_storage_backend, sanitize_storage_key
@@ -26,7 +27,12 @@ def _guess_media_type(key: str) -> str:
     return guessed or "application/octet-stream"
 
 
-@router.post("/uploads", response_model=UploadImageResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/uploads",
+    response_model=UploadImageResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(rate_limit_tryon)],
+)
 async def upload_private_person_image(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),

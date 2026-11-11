@@ -120,3 +120,4 @@ async def admin_list_audit_logs(
         items=[AdminAuditLogResponse.model_validate(item) for item in items],
         meta=PaginationMeta(page=page, limit=limit, total=total, total_pages=total_pages),
     )
+

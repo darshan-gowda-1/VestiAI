@@ -74,6 +74,10 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
         request_id = _get_request_id(request)
+        headers = {}
+        retry_after = getattr(exc, "retry_after_seconds", None)
+        if retry_after is not None:
+            headers["Retry-After"] = str(retry_after)
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -81,6 +85,7 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "message": exc.message,
                 "request_id": request_id,
             },
+            headers=headers,
         )
 
     @app.exception_handler(StarletteHTTPException)
