@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { History, Trash2, Sparkles, Clock, Eye, Bookmark } from 'lucide-react';
@@ -6,7 +6,13 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
 export const HistoryPage: React.FC = () => {
-  const { jobsHistory, savedLookIds, deleteJob, deleteAllJobs } = useApp();
+  const { jobsHistory, savedLookIds, deleteJob, deleteAllJobs, currentUser } = useApp();
+  const [filterTab, setFilterTab] = useState<'all' | 'saved'>('all');
+
+  const displayedJobs =
+    filterTab === 'saved'
+      ? jobsHistory.filter((j) => savedLookIds.includes(j.id))
+      : jobsHistory;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-10">
@@ -28,7 +34,7 @@ export const HistoryPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={deleteAllJobs}
+            onClick={() => deleteAllJobs()}
             className="text-xs text-red-600 hover:text-red-700 hover:border-red-300"
           >
             <Trash2 className="w-3.5 h-3.5 mr-1.5" />
@@ -37,10 +43,47 @@ export const HistoryPage: React.FC = () => {
         )}
       </div>
 
+      {/* Filter Tabs */}
+      {currentUser && jobsHistory.length > 0 && (
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setFilterTab('all')}
+            className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${
+              filterTab === 'all'
+                ? 'bg-charcoal text-canvas shadow-xs'
+                : 'bg-white text-charcoal-muted border border-canvas-dark hover:text-charcoal'
+            }`}
+          >
+            All Try-Ons ({jobsHistory.length})
+          </button>
+          <button
+            onClick={() => setFilterTab('saved')}
+            className={`px-4 py-2 rounded-full text-xs font-medium transition-all flex items-center space-x-1.5 ${
+              filterTab === 'saved'
+                ? 'bg-charcoal text-canvas shadow-xs'
+                : 'bg-white text-charcoal-muted border border-canvas-dark hover:text-charcoal'
+            }`}
+          >
+            <Bookmark className="w-3.5 h-3.5" />
+            <span>Saved Looks ({savedLookIds.length})</span>
+          </button>
+        </div>
+      )}
+
       {/* History Grid or Empty State */}
-      {jobsHistory.length > 0 ? (
+      {!currentUser ? (
+        <div className="rounded-3xl border border-dashed border-canvas-dark bg-white/70 py-16 px-6 text-center space-y-4 max-w-lg mx-auto">
+          <h3 className="font-serif text-xl font-medium text-charcoal">Sign In to View History</h3>
+          <p className="text-xs text-charcoal-muted leading-relaxed font-light">
+            Your try-on photographs and generated results are stored privately under your account.
+          </p>
+          <Link to="/login">
+            <Button variant="primary" size="sm">Sign In</Button>
+          </Link>
+        </div>
+      ) : displayedJobs.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobsHistory.map((job) => (
+          {displayedJobs.map((job) => (
             <div
               key={job.id}
               className="bg-white rounded-3xl border border-canvas-dark/60 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow"
@@ -104,15 +147,18 @@ export const HistoryPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        /* Empty State */
         <div className="rounded-3xl border border-dashed border-canvas-dark bg-white/70 py-20 px-6 text-center space-y-4 max-w-lg mx-auto">
           <div className="w-14 h-14 rounded-full bg-canvas-subtle border border-canvas-dark flex items-center justify-center text-charcoal-light mx-auto">
             <History className="w-6 h-6 text-accent" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-serif text-xl font-medium text-charcoal">No Previous Try-On Looks</h3>
+            <h3 className="font-serif text-xl font-medium text-charcoal">
+              {filterTab === 'saved' ? 'No Saved Looks Yet' : 'No Previous Try-On Looks'}
+            </h3>
             <p className="text-xs text-charcoal-muted leading-relaxed font-light">
-              You haven't generated any virtual try-on previews yet. Select a top and upload your photo to preview your first look.
+              {filterTab === 'saved'
+                ? 'Bookmark any completed try-on result to curate your favorite outfits here.'
+                : "You haven't generated any virtual try-on previews yet. Select a top and upload your photo to preview your first look."}
             </p>
           </div>
           <Link to="/tryon">

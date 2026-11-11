@@ -256,6 +256,39 @@ export const catalogApi = {
     const { data } = await apiClient.delete<ApiProductDto>(`/admin/products/${id}`);
     return data;
   },
+
+  async adminListProducts(limit = 100): Promise<ApiProductListDto> {
+    const { data } = await apiClient.get<ApiProductListDto>('/admin/products', {
+      params: { limit, include_inactive: true },
+    });
+    return data;
+  },
+
+  async adminUpdateProduct(
+    id: string,
+    payload: Partial<{
+      title: string;
+      brand: string;
+      description: string;
+      category: GarmentCategory;
+      color: string;
+      price: string | number;
+      is_active: boolean;
+      is_featured: boolean;
+    }>
+  ): Promise<ApiProductDto> {
+    const { data } = await apiClient.patch<ApiProductDto>(`/admin/products/${id}`, payload);
+    return data;
+  },
+
+  async adminUploadProductImage(id: string, file: File): Promise<ApiProductDto> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data } = await apiClient.post<ApiProductDto>(`/admin/products/${id}/image`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  },
 };
 
 export const tryonApi = {
@@ -297,6 +330,69 @@ export const tryonApi = {
   async deleteJob(jobId: string): Promise<void> {
     await apiClient.delete(`/tryon/jobs/${jobId}`);
   },
+
+  async purgeAllJobs(): Promise<void> {
+    await apiClient.delete('/tryon/jobs');
+  },
+};
+
+export interface AdminJobSummaryDto {
+  id: string;
+  product_id: string;
+  status: string;
+  category: string;
+  model_name: string;
+  error_code: string | null;
+  error_message: string | null;
+  processing_time_ms: number | null;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+export interface AdminUsageStatsDto {
+  total_users: number;
+  active_products: number;
+  archived_products: number;
+  total_jobs: number;
+  queued_jobs: number;
+  processing_jobs: number;
+  completed_jobs: number;
+  failed_jobs: number;
+  cancelled_jobs: number;
+  avg_processing_time_ms: number | null;
+  total_saved_looks: number;
+}
+
+export interface AdminAuditLogDto {
+  id: string;
+  admin_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  summary: string | null;
+  created_at: string;
+}
+
+export const adminApi = {
+  async listJobs(page = 1, limit = 50): Promise<{ items: AdminJobSummaryDto[] }> {
+    const { data } = await apiClient.get<{ items: AdminJobSummaryDto[] }>('/admin/jobs', {
+      params: { page, limit },
+    });
+    return data;
+  },
+
+  async getStats(): Promise<AdminUsageStatsDto> {
+    const { data } = await apiClient.get<AdminUsageStatsDto>('/admin/stats');
+    return data;
+  },
+
+  async listAuditLogs(page = 1, limit = 50): Promise<{ items: AdminAuditLogDto[] }> {
+    const { data } = await apiClient.get<{ items: AdminAuditLogDto[] }>('/admin/audit-logs', {
+      params: { page, limit },
+    });
+    return data;
+  },
 };
 
 export const collectionsApi = {
@@ -332,3 +428,4 @@ export const collectionsApi = {
     await apiClient.delete(`/wishlist/${productId}`);
   },
 };
+

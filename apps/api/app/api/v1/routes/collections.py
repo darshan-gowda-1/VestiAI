@@ -155,3 +155,4 @@ async def remove_from_wishlist(
         raise NotFoundError("Wishlist item not found.")
     await db.delete(item)
     await db.commit()
+

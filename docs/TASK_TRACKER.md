@@ -150,6 +150,20 @@
 | **TASK-146** | Display Meaningful API Errors | Phase 10 | High | Completed | TASK-134 | Normalized `{code, message, request_id}` into inline UI error banners. |
 | **TASK-147** | Handle Session Expiration (401) | Phase 10 | High | Completed | TASK-134 | 401 Axios interceptor clears stale token & shows session-expired banner. |
 | **TASK-148** | Verify Complete End-to-End User Flow | Phase 10 | Critical | Completed | TASK-134..147 | `tests/test_e2e_user_journey.py` + `npm run build` verified. |
-| **TASK-149..209** | Phases 11 through 14 (Admin/History polish, Security, QA, Deployment) | Phases 11-14 | High | Scheduled | Phase 10 | Detailed tickets defined in blueprint. |
+| **TASK-149** | History API | Phase 11 | High | Completed | Phase 9 | `GET /api/v1/tryon/jobs` paginated user history. |
+| **TASK-150** | History UI with Filter Tabs | Phase 11 | High | Completed | TASK-149 | `HistoryPage.tsx` with All Try-Ons / Saved Looks tabs. |
+| **TASK-151** | Saved Looks API | Phase 11 | High | Completed | Phase 10 | `GET/POST/DELETE /api/v1/saved-looks` with owner/status checks. |
+| **TASK-152** | Saved Looks UI | Phase 11 | High | Completed | TASK-151 | `ResultPage` save toggle & `HistoryPage` Saved Looks view. |
+| **TASK-153** | Wishlist API | Phase 11 | High | Completed | Phase 10 | `GET/POST/DELETE /api/v1/wishlist` with active product validation. |
+| **TASK-154** | Wishlist UI | Phase 11 | High | Completed | TASK-153 | `WishlistPage.tsx` displaying saved products & try-on trigger. |
+| **TASK-155** | User Deletion & Bulk Purge | Phase 11 | Critical | Completed | TASK-149 | `DELETE /api/v1/tryon/jobs/{id}` and bulk `DELETE /api/v1/tryon/jobs`. |
+| **TASK-156** | Admin Authorization | Phase 11 | Critical | Completed | Phase 6 | `require_admin` guarding all `/api/v1/admin/*` routes. |
+| **TASK-157** | Admin Dashboard UI | Phase 11 | High | Completed | TASK-156 | `AdminPage.tsx` connected to live products, jobs, stats & audit logs. |
+| **TASK-158** | Admin Product Management | Phase 11 | High | Completed | TASK-157 | Add, edit, active/archived toggle, and archive in `AdminPage`. |
+| **TASK-159** | Admin Job Monitoring | Phase 11 | High | Completed | TASK-156 | `GET /api/v1/admin/jobs` exposing minimal non-PII telemetry. |
+| **TASK-160** | Admin Usage Statistics | Phase 11 | High | Completed | TASK-156 | `GET /api/v1/admin/stats` computing real DB counts & avg latency. |
+| **TASK-161** | Admin Audit Logs | Phase 11 | Medium | Completed | TASK-156 | `GET /api/v1/admin/audit-logs` & Audit Logs tab in `AdminPage`. |
+| **TASK-162** | Admin & Collections Security Tests | Phase 11 | Critical | Completed | TASK-156..161 | `tests/test_admin_and_collections.py` verified 401/403 & minimal PII. |
+| **TASK-163..209** | Phases 12 through 14 (Security, QA, Deployment) | Phases 12-14 | High | Scheduled | Phase 11 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

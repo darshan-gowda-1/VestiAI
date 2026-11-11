@@ -102,3 +102,13 @@ async def delete_tryon_job(
     """Delete a try-on job and permanently remove its private input and result images."""
     await TryOnService.delete_job(db, job_id, current_user)
 
+
+@router.delete("/jobs", status_code=status.HTTP_200_OK)
+async def purge_my_tryon_jobs(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Permanently delete all try-on jobs and stored private photos owned by the current user."""
+    removed = await TryOnService.purge_user_jobs(db, current_user)
+    return {"deleted_jobs": removed}
+

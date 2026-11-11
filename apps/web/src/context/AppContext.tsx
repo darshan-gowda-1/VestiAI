@@ -366,7 +366,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteAllJobs = async (): Promise<void> => {
-    await Promise.all(jobsHistory.map((job) => tryonApi.deleteJob(job.id)));
+    await tryonApi.purgeAllJobs();
     setJobsHistory([]);
     setSavedLookIds([]);
     setCurrentJob(null);

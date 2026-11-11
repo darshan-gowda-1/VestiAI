@@ -229,3 +229,19 @@ class TryOnService:
             storage.delete_object(job.result_image_key)
 
         await JobRepository.delete_job(db, job)
+
+    @staticmethod
+    async def purge_user_jobs(
+        db: AsyncSession,
+        current_user: User,
+    ) -> int:
+        jobs, _ = await JobRepository.list_by_user(db, current_user.id, page=1, limit=500)
+        storage = get_storage_backend()
+        for job in jobs:
+            if job.person_image_key:
+                storage.delete_object(job.person_image_key)
+            if job.result_image_key:
+                storage.delete_object(job.result_image_key)
+            await db.delete(job)
+        await db.commit()
+        return len(jobs)

@@ -148,3 +148,4 @@ async def test_complete_shopper_e2e_journey(e2e_env):
     assert del_res.status_code == 204
     saved_after_del = await client.get("/api/v1/saved-looks", headers=headers)
     assert len(saved_after_del.json()) == 0
+
