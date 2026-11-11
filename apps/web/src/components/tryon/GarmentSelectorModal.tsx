@@ -122,3 +122,4 @@ export const GarmentSelectorModal: React.FC<GarmentSelectorModalProps> = ({
     </Dialog>
   );
 };
+

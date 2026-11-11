@@ -40,3 +40,4 @@ export interface User {
   consentGiven: boolean;
   avatarUrl?: string;
 }
+

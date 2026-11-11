@@ -86,3 +86,4 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
     </div>
   );
 };
+
