@@ -181,3 +181,4 @@ def test_storage_path_traversal_and_cleanup(tmp_path):
     assert not backend.exists(expired_key)
     assert backend.exists(fresh_key)
     assert backend.exists(catalog_key)
+

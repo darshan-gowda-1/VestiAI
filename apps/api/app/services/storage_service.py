@@ -220,3 +220,4 @@ def get_storage_backend() -> StorageBackend:
     if settings.STORAGE_BACKEND.lower().strip() == "s3":
         return S3StorageBackend()
     return LocalStorageBackend()
+

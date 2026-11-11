@@ -40,3 +40,4 @@ async def get_product_detail(
     """Retrieve details for an active product."""
     product = await CatalogService.get_product(db, product_id, allow_inactive=False)
     return ProductResponse.model_validate(product)
+

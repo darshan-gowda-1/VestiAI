@@ -102,3 +102,4 @@ class ProductRepository:
         await db.commit()
         await db.refresh(product)
         return product
+

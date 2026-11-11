@@ -1,9 +1,40 @@
 import time
 import os
 from abc import ABC, abstractmethod
+from io import BytesIO
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass, field
 from PIL import Image, ImageOps, ImageEnhance, ImageDraw
+
+
+def select_device(requested_device: str = "cuda") -> Dict[str, Any]:
+    """Detect available PyTorch compute device safely without crashing when torch is absent."""
+    req = requested_device.lower().strip()
+    try:
+        import torch
+
+        cuda_available = torch.cuda.is_available()
+        if req == "cuda" and cuda_available:
+            props = torch.cuda.get_device_properties(0)
+            return {
+                "device": "cuda",
+                "cuda_available": True,
+                "gpu_name": props.name,
+                "vram_mb": round(props.total_memory / (1024 * 1024), 1),
+            }
+        return {
+            "device": "cpu",
+            "cuda_available": cuda_available,
+            "gpu_name": None,
+            "vram_mb": 0.0,
+        }
+    except ImportError:
+        return {
+            "device": "cpu",
+            "cuda_available": False,
+            "gpu_name": None,
+            "vram_mb": 0.0,
+        }
 
 
 # --- Custom Domain Exceptions ---
@@ -147,6 +178,13 @@ class VirtualTryOnModel(ABC):
     def get_model_info(self) -> Dict[str, Any]:
         """Return metadata regarding the model, version, license, and hardware."""
         pass
+
+    def warm_up(self) -> Dict[str, Any]:
+        """Load model weights and report warm-up readiness & duration."""
+        start = time.perf_counter()
+        self.load()
+        elapsed_ms = round((time.perf_counter() - start) * 1000.0, 2)
+        return {"status": "ready", "warmup_ms": elapsed_ms, "model": self.get_model_info()}
 
 
 # --- Deterministic Stub Adapter (For CI/CD, Unit Testing, and Mock Execution) ---
@@ -374,6 +412,91 @@ class CatVTONModel(VirtualTryOnModel):
         )
 
 
+# --- Remote GPU Inference Worker Adapter (e.g., Google Colab T4) ---
+
+class RemoteColabTryOnModel(VirtualTryOnModel):
+    """
+    HTTP adapter forwarding inference requests to an external GPU worker
+    (such as VestiAI's Google Colab T4 FastAPI/ngrok inference server).
+    """
+
+    def __init__(self, endpoint_url: str, timeout_seconds: float = 120.0):
+        self.endpoint_url = endpoint_url.rstrip("/")
+        self.timeout_seconds = timeout_seconds
+        self._is_loaded = bool(self.endpoint_url)
+
+    def get_model_info(self) -> Dict[str, Any]:
+        return {
+            "name": "remote-gpu-worker",
+            "version": "colab-v1",
+            "license": "CC BY-NC-SA 4.0 (Upstream model terms apply)",
+            "device": "remote-gpu",
+            "is_simulated": False,
+            "endpoint_configured": bool(self.endpoint_url),
+        }
+
+    def load(self, config: Optional[Dict[str, Any]] = None) -> None:
+        if not self.endpoint_url:
+            raise TryOnError("REMOTE_INFERENCE_URL is not configured.", code="REMOTE_NOT_CONFIGURED")
+        self._is_loaded = True
+
+    def generate(
+        self,
+        person_image: Image.Image,
+        garment_image: Image.Image,
+        category: str,
+        settings: Optional[TryOnSettings] = None,
+    ) -> TryOnResult:
+        self.validate_inputs(person_image, garment_image, category)
+        if not self.endpoint_url:
+            raise TryOnError("REMOTE_INFERENCE_URL is not configured.", code="REMOTE_NOT_CONFIGURED")
+
+        import httpx
+
+        cfg = settings or TryOnSettings()
+        start_time = time.perf_counter()
+
+        person_buf = BytesIO()
+        person_image.convert("RGB").save(person_buf, format="PNG")
+        garment_buf = BytesIO()
+        garment_image.convert("RGB").save(garment_buf, format="PNG")
+
+        try:
+            with httpx.Client(timeout=self.timeout_seconds) as client:
+                resp = client.post(
+                    f"{self.endpoint_url}/infer",
+                    files={
+                        "person_image": ("person.png", person_buf.getvalue(), "image/png"),
+                        "garment_image": ("garment.png", garment_buf.getvalue(), "image/png"),
+                    },
+                    data={
+                        "category": category,
+                        "steps": str(cfg.num_inference_steps),
+                        "seed": str(cfg.seed),
+                    },
+                )
+        except httpx.TimeoutException:
+            raise TryOnTimeoutError(self.timeout_seconds)
+        except httpx.HTTPError as exc:
+            raise TryOnError(f"Remote GPU inference request failed: {type(exc).__name__}", code="REMOTE_ERROR")
+
+        if resp.status_code >= 400:
+            raise TryOnError(f"Remote GPU worker returned HTTP {resp.status_code}.", code="REMOTE_WORKER_ERROR")
+
+        output_img = Image.open(BytesIO(resp.content)).convert("RGB")
+        elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+        return TryOnResult(
+            output_image=output_img,
+            processing_time_ms=round(elapsed_ms, 2),
+            model_name="remote-gpu-worker",
+            model_version="colab-v1",
+            is_simulated=False,
+            input_resolution=f"{person_image.width}x{person_image.height}",
+            output_resolution=f"{output_img.width}x{output_img.height}",
+            metrics={"remote_endpoint": True, "steps": cfg.num_inference_steps},
+        )
+
+
 # --- Model Factory ---
 
 def get_tryon_model(model_name: Optional[str] = None) -> VirtualTryOnModel:
@@ -387,6 +510,11 @@ def get_tryon_model(model_name: Optional[str] = None) -> VirtualTryOnModel:
 
     if target_model in ("stub", "mock", "test"):
         return StubTryOnModel()
+    elif target_model == "remote":
+        return RemoteColabTryOnModel(
+            endpoint_url=settings.REMOTE_INFERENCE_URL,
+            timeout_seconds=float(settings.INFERENCE_TIMEOUT_SECONDS),
+        )
     elif target_model == "idm-vton":
         return IDMVTONModel(checkpoint_dir=settings.MODEL_CHECKPOINT_DIR)
     elif target_model == "catvton":

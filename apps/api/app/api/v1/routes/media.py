@@ -88,3 +88,4 @@ async def get_public_catalog_image(filename: str) -> Response:
         media_type=_guess_media_type(safe_key),
         headers={"Cache-Control": "public, max-age=3600"},
     )
+

@@ -70,6 +70,9 @@ class Settings(BaseSettings):
     MODEL_DEVICE: str = "cuda"
     MODEL_PRECISION: str = "fp16"
     MODEL_CHECKPOINT_DIR: str = "./checkpoints"
+    INFERENCE_STEPS: int = 30
+    INFERENCE_TIMEOUT_SECONDS: int = 120
+    REMOTE_INFERENCE_URL: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

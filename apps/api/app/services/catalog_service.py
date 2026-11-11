@@ -290,3 +290,4 @@ class CatalogService:
             db.add(Product(**item, is_active=True))
         await db.commit()
         return len(SAMPLE_CATALOG_ITEMS)
+

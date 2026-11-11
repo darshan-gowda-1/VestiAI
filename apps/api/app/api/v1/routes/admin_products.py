@@ -107,3 +107,4 @@ async def admin_upload_product_image(
     await db.commit()
     await db.refresh(product)
     return ProductResponse.model_validate(product)
+

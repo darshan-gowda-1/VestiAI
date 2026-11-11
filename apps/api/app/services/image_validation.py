@@ -130,3 +130,4 @@ def sanitize_image_bytes(
             code="CORRUPT_IMAGE",
             message="File could not be decoded as a valid image.",
         )
+

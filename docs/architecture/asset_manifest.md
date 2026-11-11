@@ -11,3 +11,4 @@ All visual assets in VestiAI are self-generated, CC0 synthetic, or explicitly li
 | A05 | `storage_data/catalog/prod-001.png .. prod-012.png` | Catalog Tops (12) | Generated via `scripts/seed_catalog.py` | CC0 / Public Domain | Seeded catalog garment images |
 | A06 | `storage_data/user-uploads/*` | User Portraits | User-uploaded (runtime) | Private; consent required | Temporary 2D try-on input |
 | A07 | `storage_data/tryon-results/*` | Generated Outputs | AI Pipeline output (runtime) | Private; owner-only | Virtual try-on preview |
+

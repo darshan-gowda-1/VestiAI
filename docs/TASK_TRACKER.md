@@ -104,6 +104,24 @@
 | **TASK-100** | Strict Image Validation & Sanitization | Phase 7 | Critical | Completed | TASK-99 | MIME, extension, max size, Pillow decode, dimensions, EXIF transpose & strip. |
 | **TASK-101** | Signed URLs for Private Media | Phase 7 | Critical | Completed | TASK-98 | HMAC-SHA256 expiring signed URLs (local) / S3 presigned URLs. |
 | **TASK-102** | Expired Media Retention Cleanup | Phase 7 | High | Completed | TASK-98 | `cleanup_expired_objects` & `scripts/cleanup_media.py` verified via tests. |
-| **TASK-103..209** | Phases 8 through 14 (AI Pipeline, Worker, Integration, Admin, Security, QA, Deployment) | Phases 8-14 | High | Scheduled | Phase 7 | Detailed tickets defined in blueprint. |
+| **TASK-103** | Define Pipeline Input Contract | Phase 8 | High | Completed | Phase 2 | `TryOnPipelineInput` dataclass in `app/ai/pipeline.py`. |
+| **TASK-104** | Define Pipeline Output Contract | Phase 8 | High | Completed | Phase 2 | `TryOnPipelineOutput` with metadata, timings, and error codes. |
+| **TASK-105** | Implement Person Preprocessing | Phase 8 | High | Completed | TASK-103 | `preprocess_person_image` with EXIF transpose & aspect-preserving pad. |
+| **TASK-106** | Implement Garment Preprocessing | Phase 8 | High | Completed | TASK-103 | `preprocess_garment_image` compositing RGBA onto studio white. |
+| **TASK-107** | Implement Model-Specific Preprocessing | Phase 8 | Medium | Completed | TASK-105, 106 | `generate_upper_body_mask` for diffusion inpainting models. |
+| **TASK-108** | Connect Model Adapters | Phase 8 | Critical | Completed | Phase 2 | Added `RemoteColabTryOnModel` alongside `IDMVTONModel`, `CatVTONModel`, `StubTryOnModel`. |
+| **TASK-109** | Implement Device Selection | Phase 8 | High | Completed | TASK-108 | `select_device()` detecting CUDA GPU / VRAM with safe CPU fallback. |
+| **TASK-110** | Configure Inference Settings | Phase 8 | Medium | Completed | TASK-108 | `INFERENCE_STEPS`, `INFERENCE_TIMEOUT_SECONDS`, `REMOTE_INFERENCE_URL`. |
+| **TASK-111** | Implement Output Postprocessing | Phase 8 | High | Completed | TASK-104 | `postprocess_output_image` normalizing RGB PNG output bytes. |
+| **TASK-112** | Persist Pipeline Output Privately | Phase 8 | Critical | Completed | Phase 7 | Outputs saved under `tryon-results/` via `StorageBackend`. |
+| **TASK-113** | Implement Timeout Handling | Phase 8 | High | Completed | TASK-108 | `asyncio.wait_for` enforcing timeout -> `INFERENCE_TIMEOUT`. |
+| **TASK-114** | Handle GPU Memory Errors | Phase 8 | High | Completed | TASK-108 | `TryOnOOMError` + `torch.cuda.empty_cache()` recovery. |
+| **TASK-115** | Implement Model Warm-Up | Phase 8 | Medium | Completed | TASK-108 | `VirtualTryOnModel.warm_up()` reporting readiness & duration. |
+| **TASK-116** | Measure Pipeline Latency | Phase 8 | High | Completed | TASK-104 | Recorded `preprocess_ms`, `inference_ms`, `postprocess_ms`, `total_ms`. |
+| **TASK-117** | Image Quality & Output Evaluation | Phase 8 | High | Completed | TASK-112 | Verified 768x1024 RGB PNG output across test fixtures. |
+| **TASK-118** | Pose & Garment Category Testing | Phase 8 | High | Completed | TASK-117 | Tested wide/square/portrait ratios and all 4 top categories. |
+| **TASK-119** | Invalid Input, OOM & Timeout Testing | Phase 8 | Critical | Completed | TASK-113, 114 | 5 tests in `tests/test_ai_pipeline.py` verifying failure paths. |
+| **TASK-120** | Document Pipeline Architecture & Limits | Phase 8 | Medium | Completed | TASK-117 | `docs/model-evaluation/pipeline_architecture.md`. |
+| **TASK-121..209** | Phases 9 through 14 (Worker, Integration, Admin, Security, QA, Deployment) | Phases 9-14 | High | Scheduled | Phase 8 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

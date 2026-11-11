@@ -175,3 +175,4 @@ async def test_admin_product_crud_and_role_guards(catalog_env):
         logs = (await db.execute(select(AdminAuditLog))).scalars().all()
         actions = {log.action for log in logs}
         assert {"CREATE_PRODUCT", "UPDATE_PRODUCT", "UPLOAD_PRODUCT_IMAGE", "ARCHIVE_PRODUCT"} <= actions
+
