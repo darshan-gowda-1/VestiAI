@@ -177,6 +177,7 @@
 | **TASK-173** | Review Model & Asset Licenses | Phase 12 | High | Completed | Phase 2, 7 | Audited MIT, Apache 2.0, CC BY-NC-SA 4.0, CC0 assets. |
 | **TASK-174** | Document Responsible Use & Limitations | Phase 12 | High | Completed | TASK-164 | Documented in policy & `/privacy` page. |
 | **TASK-175** | Security & Privacy Test Suite | Phase 12 | Critical | Completed | TASK-163..174 | `tests/test_security_and_privacy.py` verified headers, 429, consents, secret guard. |
-| **TASK-176..209** | Phases 13 through 14 (QA & Deployment) | Phases 13-14 | High | Scheduled | Phase 12 | Detailed tickets defined in blueprint. |
+| **TASK-176..191** | Phase 13: Testing and Quality Assurance (Backend 46 tests, Performance benchmarks, Frontend Vitest 5 tests, TypeScript & Vite build, `docs/reports/test_report.md`) | Phase 13 | High | Completed | Phase 12 | Backend `46 passed`, Vitest `5 passed`, `tsc --noEmit` & `vite build` passed, report written. |
+| **TASK-192..209** | Phase 14 (Deployment & DevOps) | Phase 14 | High | Scheduled | Phase 13 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

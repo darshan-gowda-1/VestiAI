@@ -51,7 +51,7 @@ class PayloadTooLargeError(AppError):
         super().__init__(
             code="PAYLOAD_TOO_LARGE",
             message=message,
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            status_code=getattr(status, "HTTP_413_CONTENT_TOO_LARGE", 413),
         )
 
 
@@ -60,7 +60,7 @@ class UnprocessableEntityError(AppError):
         super().__init__(
             code=code,
             message=message,
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
         )
 
 
@@ -124,7 +124,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             msg = err.get("msg", "Invalid value")
             first_msg = f"{loc}: {msg}" if loc else msg
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
             content={
                 "code": "VALIDATION_ERROR",
                 "message": first_msg,
