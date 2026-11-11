@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
     SYNC_DATABASE_URL: str = "postgresql://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
+    DB_ECHO: bool = False
 
     # Redis Queue
     REDIS_URL: str = "redis://localhost:6379/0"

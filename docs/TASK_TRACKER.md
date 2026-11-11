@@ -60,24 +60,24 @@
 | **TASK-56** | Implement Profile & Settings UI | Phase 4 | Medium | Completed | TASK-43 | Profile page with consent toggle and permanent data erasure. |
 | **TASK-57** | Verify Responsive Layout Across Breakpoints | Phase 4 | High | Completed | TASK-44..56 | Verified across mobile (375px), tablet (768px), and desktop (1280px). |
 | **TASK-58** | Frontend Build & Verification | Phase 4 | Critical | Completed | TASK-57 | npm run lint (tsc --noEmit) & npm run build verified with zero errors. |
-| **TASK-59** | Initialize FastAPI Core Application | Phase 5 | Critical | Pending | Phase 1 | FastAPI app setup, lifecycle events. |
-| **TASK-60** | Implement Environment Settings | Phase 5 | High | Pending | TASK-59 | Pydantic Settings with .env parsing. |
-| **TASK-61** | Configure CORS & Security Middlewares | Phase 5 | High | Pending | TASK-60 | Allow origins, trusted host, secure headers. |
-| **TASK-62** | Setup PostgreSQL Connection | Phase 5 | Critical | Pending | TASK-60 | Async connection pool with SQLAlchemy 2.0. |
-| **TASK-63** | Configure SQLAlchemy ORM Engine & Base | Phase 5 | High | Pending | TASK-62 | DeclarativeBase, UUID primary key mixins. |
-| **TASK-64** | Configure Alembic Migration Environment | Phase 5 | High | Pending | TASK-63 | Env.py setup, autogenerate capabilities. |
-| **TASK-65** | Implement User ORM Model | Phase 5 | High | Pending | TASK-63 | Users table with roles (user, admin). |
-| **TASK-66** | Implement Product ORM Model | Phase 5 | High | Pending | TASK-63 | Products table with category, images, status. |
-| **TASK-67** | Implement TryOnJob ORM Model | Phase 5 | Critical | Pending | TASK-63 | TryOnJob table with UUID, status enum, keys, timestamps. |
-| **TASK-68** | Implement SavedLook ORM Model | Phase 5 | Medium | Pending | TASK-63 | Saved looks per user. |
-| **TASK-69** | Implement WishlistItem ORM Model | Phase 5 | Medium | Pending | TASK-63 | Wishlist association table. |
-| **TASK-70** | Implement ConsentRecord ORM Model | Phase 5 | High | Pending | TASK-63 | Consent tracking for privacy compliance. |
-| **TASK-71** | Implement AdminAuditLog ORM Model | Phase 5 | Medium | Pending | TASK-63 | Audit records for administrative actions. |
-| **TASK-72** | Add Database Indexes & Foreign Keys | Phase 5 | High | Pending | TASK-65..71 | Query performance indexes and cascade rules. |
-| **TASK-73** | Implement Liveness & Health Check APIs | Phase 5 | High | Pending | TASK-59 | `/health` and `/api/v1/health` with DB check. |
-| **TASK-74** | Implement Global Exception Handlers | Phase 5 | High | Pending | TASK-59 | Consistent JSON error responses `{code, message, request_id}`. |
-| **TASK-75** | Implement Pydantic Request/Response Schemas | Phase 5 | High | Pending | TASK-65..71 | Strict validation and serialization. |
-| **TASK-76** | Verify Interactive API Documentation | Phase 5 | Medium | Pending | TASK-73..75 | Swagger UI `/docs` and ReDoc `/redoc`. |
+| **TASK-59** | Initialize FastAPI Core Application | Phase 5 | Critical | Completed | Phase 1 | Lifespan, RequestID middleware, router mounting in `app/main.py`. |
+| **TASK-60** | Implement Environment Settings | Phase 5 | High | Completed | TASK-59 | Pydantic Settings with `.env` parsing & logging config. |
+| **TASK-61** | Configure CORS & Security Middlewares | Phase 5 | High | Completed | TASK-60 | CORS origins + `X-Request-ID` correlation middleware. |
+| **TASK-62** | Setup PostgreSQL Connection | Phase 5 | Critical | Completed | TASK-60 | Async connection pool (`asyncpg`) + `aiosqlite` local fallback. |
+| **TASK-63** | Configure SQLAlchemy ORM Engine & Base | Phase 5 | High | Completed | TASK-62 | SQLAlchemy 2.0 `DeclarativeBase`, `AsyncSessionLocal`, `get_db()`. |
+| **TASK-64** | Configure Alembic Migration Environment | Phase 5 | High | Completed | TASK-63 | `alembic.ini`, `alembic/env.py`, `2ab687efcfd1_initial_schema.py` verified. |
+| **TASK-65** | Implement User ORM Model | Phase 5 | High | Completed | TASK-63 | `users` table with UUID PK, unique email, role (`user`/`admin`). |
+| **TASK-66** | Implement Product ORM Model | Phase 5 | High | Completed | TASK-63 | `products` table with category, images, active status, indexes. |
+| **TASK-67** | Implement TryOnJob ORM Model | Phase 5 | Critical | Completed | TASK-63 | `tryon_jobs` table with UUID, status, keys, consent, timestamps. |
+| **TASK-68** | Implement SavedLook ORM Model | Phase 5 | Medium | Completed | TASK-63 | `saved_looks` table with unique `(user_id, job_id)`. |
+| **TASK-69** | Implement WishlistItem ORM Model | Phase 5 | Medium | Completed | TASK-63 | `wishlist_items` table with unique `(user_id, product_id)`. |
+| **TASK-70** | Implement ConsentRecord ORM Model | Phase 5 | High | Completed | TASK-63 | `consent_records` table tracking consent version & timestamp. |
+| **TASK-71** | Implement AdminAuditLog ORM Model | Phase 5 | Medium | Completed | TASK-63 | `admin_audit_logs` table (no secrets or image contents). |
+| **TASK-72** | Add Database Indexes & Foreign Keys | Phase 5 | High | Completed | TASK-65..71 | Composite indexes and cascade rules verified via pytest. |
+| **TASK-73** | Implement Liveness & Health Check APIs | Phase 5 | High | Completed | TASK-59 | `/health` and `/api/v1/health` with live DB connectivity check. |
+| **TASK-74** | Implement Global Exception Handlers | Phase 5 | High | Completed | TASK-59 | Consistent `{code, message, request_id}` error responses. |
+| **TASK-75** | Implement Pydantic Request/Response Schemas | Phase 5 | High | Completed | TASK-65..71 | Strict schemas in `app/schemas/` verified via unit tests. |
+| **TASK-76** | Verify Interactive API Documentation | Phase 5 | Medium | Completed | TASK-73..75 | Verified `/docs`, `/redoc`, `/openapi.json` return HTTP 200. |
 | **TASK-77..209** | Phases 6 through 14 (Auth, Catalog, Storage, AI Pipeline, Worker, Integration, Admin, Security, QA, Deployment) | Phases 6-14 | High | Scheduled | Phase 5 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 
