@@ -101,3 +101,4 @@ async def delete_tryon_job(
 ) -> None:
     """Delete a try-on job and permanently remove its private input and result images."""
     await TryOnService.delete_job(db, job_id, current_user)
+

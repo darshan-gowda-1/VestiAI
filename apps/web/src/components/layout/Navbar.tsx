@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { ArrowRight, Heart, User, Menu, X, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, Heart, User, Menu, X, Shield, Sparkles, AlertCircle } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { wishlist, currentUser, logout, login } = useApp();
+  const { wishlist, currentUser, logout, sessionExpiredMessage, clearSessionExpiredMessage } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -98,12 +98,12 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => login('user')}
-                className="text-xs font-medium text-charcoal hover:text-charcoal-muted px-3 py-1.5 rounded-full border border-canvas-dark"
+              <Link
+                to="/login"
+                className="text-xs font-medium text-charcoal hover:text-charcoal-muted px-3.5 py-1.5 rounded-full border border-canvas-dark"
               >
-                Sign In (Demo)
-              </button>
+                Sign In
+              </Link>
             )}
 
             <Link
@@ -198,16 +198,40 @@ export const Navbar: React.FC = () => {
                 Sign Out ({currentUser.name})
               </button>
             ) : (
-              <button
-                onClick={() => {
-                  login('user');
-                  setMobileMenuOpen(false);
-                }}
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-2.5 rounded-full border border-canvas-dark text-xs text-charcoal text-center"
               >
-                Sign In as Demo User
-              </button>
+                Sign In / Register
+              </Link>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Session Expiration Alert Banner */}
+      {sessionExpiredMessage && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-xs text-amber-900">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{sessionExpiredMessage}</span>
+              <Link
+                to="/login"
+                onClick={clearSessionExpiredMessage}
+                className="font-semibold underline hover:text-amber-700"
+              >
+                Sign In
+              </Link>
+            </div>
+            <button
+              onClick={clearSessionExpiredMessage}
+              className="text-amber-700 hover:text-amber-950"
+              aria-label="Dismiss alert"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}

@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { ApiError, catalogApi, mapProductDto } from '../services/api';
+import { Product } from '../types';
 import { Sparkles, Heart, ArrowLeft, ShieldCheck, Info, Check } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Skeleton } from '../components/ui/skeleton';
 import { ProductCard } from '../components/catalog/ProductCard';
 
 export const ProductDetailPage: React.FC = () => {
@@ -11,7 +14,63 @@ export const ProductDetailPage: React.FC = () => {
   const { products, wishlist, toggleWishlist, setSelectedGarment } = useApp();
   const navigate = useNavigate();
 
-  const product = products.find((p) => p.id === id) || products[0];
+  const cachedProduct = products.find((p) => p.id === id) || null;
+  const [fetchedProduct, setFetchedProduct] = useState<Product | null>(cachedProduct);
+  const [isLoading, setIsLoading] = useState<boolean>(!cachedProduct);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (cachedProduct) {
+      setFetchedProduct(cachedProduct);
+      setIsLoading(false);
+      return;
+    }
+    if (!id) return;
+    let active = true;
+    setIsLoading(true);
+    setError(null);
+    catalogApi
+      .getProduct(id)
+      .then((dto) => {
+        if (active) setFetchedProduct(mapProductDto(dto));
+      })
+      .catch((err) => {
+        if (active) setError(err instanceof ApiError ? err.message : 'Product not found.');
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, cachedProduct]);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <Skeleton className="aspect-[4/5] w-full rounded-3xl" />
+        <div className="space-y-4 pt-6">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !fetchedProduct) {
+    return (
+      <div className="max-w-lg mx-auto px-6 py-20 text-center space-y-4">
+        <h2 className="font-serif text-2xl font-medium text-charcoal">Product Unavailable</h2>
+        <p className="text-sm text-charcoal-muted">{error || 'This garment could not be found.'}</p>
+        <Link to="/catalog">
+          <Button variant="primary">Return to Catalog</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const product = fetchedProduct;
   const isWishlisted = wishlist.includes(product.id);
 
   const relatedProducts = products
@@ -21,6 +80,14 @@ export const ProductDetailPage: React.FC = () => {
   const handleStartTryOn = () => {
     setSelectedGarment(product);
     navigate(`/tryon?productId=${product.id}`);
+  };
+
+  const handleWishlist = async () => {
+    try {
+      await toggleWishlist(product.id);
+    } catch {
+      navigate('/login');
+    }
   };
 
   return (
@@ -65,7 +132,7 @@ export const ProductDetailPage: React.FC = () => {
                 {product.brand}
               </span>
               <button
-                onClick={() => toggleWishlist(product.id)}
+                onClick={handleWishlist}
                 className={`p-2 rounded-full border transition-all ${
                   isWishlisted
                     ? 'border-accent bg-accent text-white'

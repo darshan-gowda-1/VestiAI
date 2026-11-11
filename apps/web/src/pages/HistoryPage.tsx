@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { History, Trash2, Sparkles, Clock, Eye } from 'lucide-react';
+import { History, Trash2, Sparkles, Clock, Eye, Bookmark } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
 export const HistoryPage: React.FC = () => {
-  const { jobsHistory, deleteJob, deleteAllJobs } = useApp();
+  const { jobsHistory, savedLookIds, deleteJob, deleteAllJobs } = useApp();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-10">
@@ -52,10 +52,16 @@ export const HistoryPage: React.FC = () => {
                   alt={job.product.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 left-3">
+                <div className="absolute top-3 left-3 flex items-center gap-1.5">
                   <Badge variant="accent" className="text-[10px] bg-white/90 backdrop-blur shadow-xs">
-                    2D Preview
+                    {job.status}
                   </Badge>
+                  {savedLookIds.includes(job.id) && (
+                    <Badge variant="success" className="text-[10px] flex items-center gap-1">
+                      <Bookmark className="w-2.5 h-2.5 fill-current" />
+                      <span>Saved</span>
+                    </Badge>
+                  )}
                 </div>
                 <div className="absolute top-3 right-3">
                   <button

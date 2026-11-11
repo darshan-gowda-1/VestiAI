@@ -135,6 +135,21 @@
 | **TASK-131** | Implement Safe Job Cancellation | Phase 9 | Medium | Completed | TASK-125 | `POST /api/v1/tryon/jobs/{id}/cancel` + worker mid-flight discard. |
 | **TASK-132** | Implement Duplicate Submission Prevention | Phase 9 | High | Completed | TASK-123 | `Idempotency-Key` + SHA-256 content-hash deduplication. |
 | **TASK-133** | Implement & Test Worker Reliability | Phase 9 | Critical | Completed | TASK-122..132 | Stale processing job crash recovery + 4 test suites in `tests/test_jobs_and_worker.py`. |
-| **TASK-134..209** | Phases 10 through 14 (Integration, Admin, Security, QA, Deployment) | Phases 10-14 | High | Scheduled | Phase 9 | Detailed tickets defined in blueprint. |
+| **TASK-134** | Create Typed API Client | Phase 10 | Critical | Completed | Phase 9 | `apps/web/src/services/api.ts` using Axios, `ApiError`, and DTO mappers. |
+| **TASK-135** | Integrate Authentication Flows | Phase 10 | Critical | Completed | TASK-134 | Connected `LoginPage`, `RegisterPage`, `Navbar`, and `AppContext` to `/auth/*`. |
+| **TASK-136** | Integrate Catalog Listing | Phase 10 | High | Completed | TASK-134 | `CatalogPage` & `AppContext` fetch `GET /api/v1/products` with loading/error states. |
+| **TASK-137** | Integrate Product Detail View | Phase 10 | High | Completed | TASK-136 | `ProductDetailPage` loads live product via `GET /api/v1/products/{id}`. |
+| **TASK-138** | Connect Person Image Upload | Phase 10 | Critical | Completed | TASK-134 | `ImageUploader` passes real `File` binary for multipart `FormData` upload. |
+| **TASK-139** | Connect Garment Selection to Requests | Phase 10 | High | Completed | TASK-136 | Passes real catalog UUID `product_id` into try-on submissions. |
+| **TASK-140** | Integrate Try-On Job Creation | Phase 10 | Critical | Completed | TASK-138, 139 | `TryOnPage` submits multipart `POST /api/v1/tryon/jobs`. |
+| **TASK-141** | Integrate Job Status Polling & Cancel | Phase 10 | Critical | Completed | TASK-140 | Polls `GET /api/v1/tryon/jobs/{id}` & connects `POST .../cancel`. |
+| **TASK-142** | Display Signed Generated Output | Phase 10 | Critical | Completed | TASK-141 | `ResultPage` renders real signed `person_image_url` and `result_url`. |
+| **TASK-143** | Connect Saved Looks Collection | Phase 10 | High | Completed | TASK-134 | Added `/api/v1/saved-looks` routes & wired `ResultPage` / `HistoryPage`. |
+| **TASK-144** | Connect Wishlist Collection | Phase 10 | High | Completed | TASK-134 | Added `/api/v1/wishlist` routes & wired `ProductCard`, `ProductDetail`, `WishlistPage`. |
+| **TASK-145** | Connect Try-On History & Deletion | Phase 10 | High | Completed | TASK-134 | Wired `GET /api/v1/tryon/jobs` & `DELETE /api/v1/tryon/jobs/{id}`. |
+| **TASK-146** | Display Meaningful API Errors | Phase 10 | High | Completed | TASK-134 | Normalized `{code, message, request_id}` into inline UI error banners. |
+| **TASK-147** | Handle Session Expiration (401) | Phase 10 | High | Completed | TASK-134 | 401 Axios interceptor clears stale token & shows session-expired banner. |
+| **TASK-148** | Verify Complete End-to-End User Flow | Phase 10 | Critical | Completed | TASK-134..147 | `tests/test_e2e_user_journey.py` + `npm run build` verified. |
+| **TASK-149..209** | Phases 11 through 14 (Admin/History polish, Security, QA, Deployment) | Phases 11-14 | High | Scheduled | Phase 10 | Detailed tickets defined in blueprint. |
 | **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
 

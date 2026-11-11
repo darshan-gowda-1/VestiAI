@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 
 interface ImageUploaderProps {
   image: string | null;
-  onImageSelected: (dataUrl: string) => void;
+  onImageSelected: (dataUrl: string, file: File) => void;
   onImageRemoved: () => void;
 }
 
@@ -35,7 +35,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result && typeof e.target.result === 'string') {
-        onImageSelected(e.target.result);
+        onImageSelected(e.target.result, file);
       }
     };
     reader.onerror = () => {

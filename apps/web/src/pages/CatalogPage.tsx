@@ -3,12 +3,12 @@ import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { GarmentCategory } from '../types';
 import { ProductCard } from '../components/catalog/ProductCard';
-import { Search, SlidersHorizontal, RotateCcw, PackageOpen } from 'lucide-react';
+import { Search, SlidersHorizontal, RotateCcw, PackageOpen, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 
 export const CatalogPage: React.FC = () => {
-  const { products } = useApp();
+  const { products, isCatalogLoading, catalogError, refreshCatalog } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [search, setSearch] = useState('');
@@ -16,7 +16,6 @@ export const CatalogPage: React.FC = () => {
     (searchParams.get('category') as GarmentCategory) || 'all'
   );
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'title'>('featured');
-  const [isLoading] = useState(false);
 
   // Sync category query param
   useEffect(() => {
@@ -131,8 +130,8 @@ export const CatalogPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Product Grid or Empty State */}
-      {isLoading ? (
+      {/* Product Grid or Loading / Error / Empty State */}
+      {isCatalogLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="space-y-3">
@@ -141,6 +140,20 @@ export const CatalogPage: React.FC = () => {
               <Skeleton className="h-3 w-1/2" />
             </div>
           ))}
+        </div>
+      ) : catalogError ? (
+        <div className="rounded-3xl border border-red-200 bg-red-50/60 py-14 px-6 text-center space-y-4 max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-full bg-white border border-red-200 flex items-center justify-center text-red-600 mx-auto">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-serif text-xl font-medium text-charcoal">Unable to Load Catalog</h3>
+            <p className="text-xs text-charcoal-muted leading-relaxed">{catalogError}</p>
+          </div>
+          <Button variant="primary" size="sm" onClick={() => refreshCatalog()} className="text-xs">
+            <RotateCcw className="w-3.5 h-3.5 mr-1" />
+            <span>Retry Connection</span>
+          </Button>
         </div>
       ) : filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -17,6 +17,16 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
     navigate(`/tryon?productId=${product.id}`);
   };
 
+  const handleWishlistClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await toggleWishlist(product.id);
+    } catch {
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="group relative bg-white rounded-2xl border border-canvas-dark/60 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden">
       {/* Garment Image Well */}
@@ -37,11 +47,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
 
         {/* Wishlist Heart Button */}
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleWishlist(product.id);
-          }}
+          onClick={handleWishlistClick}
           aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur transition-all ${
             isWishlisted

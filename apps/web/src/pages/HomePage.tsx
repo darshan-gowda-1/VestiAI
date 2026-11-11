@@ -92,14 +92,20 @@ export const HomePage: React.FC = () => {
 
                   <div className="bg-canvas-subtle rounded-2xl p-4 text-center space-y-2 border border-canvas-dark/40">
                     <div className="aspect-[3/4] bg-white rounded-xl overflow-hidden flex items-center justify-center p-2">
-                      <img
-                        src={products[0].imageUrl}
-                        alt="Garment sample"
-                        className="w-full h-full object-contain"
-                      />
+                      {products[0]?.imageUrl ? (
+                        <img
+                          src={products[0].imageUrl}
+                          alt={products[0].title}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <Shirt className="w-10 h-10 text-canvas-dark" />
+                      )}
                     </div>
                     <p className="text-xs font-medium text-charcoal">2. Target Top</p>
-                    <p className="text-[10px] text-charcoal-light">Navy Cotton Crewneck</p>
+                    <p className="text-[10px] text-charcoal-light truncate">
+                      {products[0]?.title || 'Catalog Upper-Body Top'}
+                    </p>
                   </div>
                 </div>
 

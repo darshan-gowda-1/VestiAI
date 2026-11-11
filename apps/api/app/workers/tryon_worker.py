@@ -160,3 +160,4 @@ async def worker_loop(poll_interval_seconds: float = 1.0) -> None:
 
 if __name__ == "__main__":
     asyncio.run(worker_loop())
+

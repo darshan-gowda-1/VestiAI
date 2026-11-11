@@ -355,3 +355,4 @@ async def test_worker_retries_oom_and_crash_recovery(worker_env):
         refreshed = await JobRepository.get_by_id(db, stale_id)
         assert refreshed.status == "failed"
         assert refreshed.error_code == "WORKER_CRASH_RECOVERED"
+

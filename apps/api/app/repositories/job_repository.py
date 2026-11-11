@@ -114,3 +114,4 @@ class JobRepository:
     async def delete_job(db: AsyncSession, job: TryOnJob) -> None:
         await db.delete(job)
         await db.commit()
+

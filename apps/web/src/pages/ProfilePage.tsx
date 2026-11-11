@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { ApiError } from '../services/api';
 import { ShieldCheck, Trash2, CheckCircle2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Dialog } from '../components/ui/dialog';
+import { Input } from '../components/ui/input';
 
 export const ProfilePage: React.FC = () => {
-  const { currentUser, updateUserConsent, deleteAllJobs } = useApp();
+  const { currentUser, updateUserConsent, updateProfileName, deleteAllJobs } = useApp();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletedSuccess, setDeletedSuccess] = useState(false);
+  const [fullName, setFullName] = useState(currentUser?.name || '');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileStatus, setProfileStatus] = useState<string | null>(null);
 
-  const handleConfirmDeleteAll = () => {
-    deleteAllJobs();
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim()) return;
+    setIsSavingProfile(true);
+    setProfileStatus(null);
+    try {
+      await updateProfileName(fullName.trim());
+      setProfileStatus('Profile updated.');
+    } catch (err) {
+      setProfileStatus(err instanceof ApiError ? err.message : 'Failed to update profile.');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleConfirmDeleteAll = async () => {
+    await deleteAllJobs();
     setDeleteModalOpen(false);
     setDeletedSuccess(true);
     setTimeout(() => setDeletedSuccess(false), 4000);
@@ -57,6 +77,27 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Profile Update Form */}
+        {currentUser && (
+          <form onSubmit={handleSaveProfile} className="pb-6 border-b border-canvas-subtle flex flex-col sm:flex-row sm:items-end gap-3">
+            <div className="flex-1">
+              <Input
+                id="fullName"
+                label="Display Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Your display name"
+              />
+            </div>
+            <Button type="submit" variant="secondary" size="md" isLoading={isSavingProfile}>
+              Save Profile
+            </Button>
+            {profileStatus && (
+              <span className="text-xs text-emerald-700 font-medium">{profileStatus}</span>
+            )}
+          </form>
+        )}
 
         {/* Consent Management */}
         <div className="space-y-4">

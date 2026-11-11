@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { ApiError } from '../services/api';
 import { ImageUploader } from '../components/tryon/ImageUploader';
 import { GuidanceCard } from '../components/tryon/GuidanceCard';
 import { GarmentSelectorModal } from '../components/tryon/GarmentSelectorModal';
 import { JobProgressView } from '../components/tryon/JobProgressView';
-import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle } from 'lucide-react';
+import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle, Lock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Skeleton } from '../components/ui/skeleton';
 
 export const TryOnPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -15,52 +17,85 @@ export const TryOnPage: React.FC = () => {
 
   const {
     products,
+    isCatalogLoading,
     selectedGarment,
     setSelectedGarment,
     uploadedPersonImage,
-    setUploadedPersonImage,
+    uploadedPersonFile,
+    setUploadedPersonPhoto,
     consentGiven,
     setConsentGiven,
     currentJob,
+    clearCurrentJob,
     startTryOnJob,
+    cancelTryOnJob,
+    currentUser,
   } = useApp();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [consentError, setConsentError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Set selected garment from URL parameter if provided
   useEffect(() => {
     const prodId = searchParams.get('productId');
-    if (prodId) {
+    if (prodId && products.length > 0) {
       const match = products.find((p) => p.id === prodId);
       if (match) setSelectedGarment(match);
     }
   }, [searchParams, products, setSelectedGarment]);
 
-  const activeGarment = selectedGarment || products[0];
+  const activeGarment = selectedGarment || products[0] || null;
 
   const handleSubmitTryOn = async () => {
-    if (!uploadedPersonImage) return;
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+    if (!uploadedPersonFile || !activeGarment) return;
 
     if (!consentGiven) {
       setConsentError(true);
       return;
     }
     setConsentError(false);
+    setSubmitError(null);
+    setIsSubmitting(true);
 
-    const completedJob = await startTryOnJob(activeGarment, uploadedPersonImage);
-    if (completedJob) {
-      navigate(`/result/${completedJob.id}`);
+    try {
+      const finishedJob = await startTryOnJob(activeGarment, uploadedPersonFile, 'upper_body');
+      if (finishedJob.status === 'completed') {
+        navigate(`/result/${finishedJob.id}`);
+      } else if (finishedJob.status === 'failed') {
+        setSubmitError(finishedJob.error || 'AI try-on worker failed. Please try another photo.');
+      }
+    } catch (err) {
+      setSubmitError(
+        err instanceof ApiError ? err.message : 'Unable to submit try-on request. Please retry.'
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // If a job is currently queued or processing, show the progress view
+  const handleCancelJob = async () => {
+    if (!currentJob) {
+      clearCurrentJob();
+      return;
+    }
+    try {
+      await cancelTryOnJob(currentJob.id);
+    } catch {
+      clearCurrentJob();
+    }
+  };
+
   if (currentJob && (currentJob.status === 'queued' || currentJob.status === 'processing')) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <JobProgressView
           job={currentJob}
-          onCancel={() => navigate('/catalog')}
+          onCancel={handleCancelJob}
           onViewResult={() => navigate(`/result/${currentJob.id}`)}
         />
       </div>
@@ -86,6 +121,30 @@ export const TryOnPage: React.FC = () => {
         </p>
       </div>
 
+      {/* Authentication Notice if unauthenticated */}
+      {!currentUser && (
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-amber-900">
+          <div className="flex items-center space-x-2.5">
+            <Lock className="w-4 h-4 text-amber-700 shrink-0" />
+            <span>
+              <strong>Sign in required:</strong> Photographs are stored privately under your account so only you can access generated results.
+            </span>
+          </div>
+          <Link to="/login">
+            <Button variant="primary" size="sm" className="text-xs whitespace-nowrap">
+              Sign In / Register
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {submitError && (
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+          <span>{submitError}</span>
+        </div>
+      )}
+
       {/* Main Dual-Pane Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Photo Upload & Guidance (7 cols) */}
@@ -102,12 +161,11 @@ export const TryOnPage: React.FC = () => {
             </h2>
             <ImageUploader
               image={uploadedPersonImage}
-              onImageSelected={(url) => setUploadedPersonImage(url)}
-              onImageRemoved={() => setUploadedPersonImage(null)}
+              onImageSelected={(url, file) => setUploadedPersonPhoto(url, file)}
+              onImageRemoved={() => setUploadedPersonPhoto(null, null)}
             />
           </div>
 
-          {/* Guidance Card */}
           <GuidanceCard />
 
           {/* Mandatory Consent Checkbox */}
@@ -157,6 +215,7 @@ export const TryOnPage: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsModalOpen(true)}
+                disabled={products.length === 0}
                 className="text-xs"
               >
                 <RefreshCw className="w-3 h-3 mr-1" />
@@ -164,41 +223,48 @@ export const TryOnPage: React.FC = () => {
               </Button>
             </div>
 
-            {/* Active Garment Card */}
-            <div className="bg-white rounded-3xl p-6 border border-canvas-dark/60 shadow-sm space-y-4">
-              <div className="aspect-[4/5] bg-canvas-subtle rounded-2xl overflow-hidden p-6 flex items-center justify-center relative">
-                <img
-                  src={activeGarment.imageUrl}
-                  alt={activeGarment.title}
-                  className="w-full h-full object-contain"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge variant="secondary" className="bg-white/90 backdrop-blur shadow-xs text-[11px]">
-                    {activeGarment.categoryLabel}
-                  </Badge>
+            {isCatalogLoading ? (
+              <Skeleton className="aspect-[4/5] w-full rounded-3xl" />
+            ) : activeGarment ? (
+              <div className="bg-white rounded-3xl p-6 border border-canvas-dark/60 shadow-sm space-y-4">
+                <div className="aspect-[4/5] bg-canvas-subtle rounded-2xl overflow-hidden p-6 flex items-center justify-center relative">
+                  <img
+                    src={activeGarment.imageUrl}
+                    alt={activeGarment.title}
+                    className="w-full h-full object-contain"
+                  />
+                  <div className="absolute top-3 left-3">
+                    <Badge variant="secondary" className="bg-white/90 backdrop-blur shadow-xs text-[11px]">
+                      {activeGarment.categoryLabel}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-xs text-charcoal-light uppercase font-semibold">
+                    {activeGarment.brand}
+                  </p>
+                  <h3 className="font-serif text-lg font-medium text-charcoal">
+                    {activeGarment.title}
+                  </h3>
+                  <p className="text-xs text-charcoal-muted">
+                    Color: {activeGarment.color} • Material: {activeGarment.material}
+                  </p>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between border-t border-canvas-subtle text-xs">
+                  <span className="font-semibold text-charcoal text-base">${activeGarment.price}</span>
+                  <span className="text-emerald-700 font-medium flex items-center space-x-1">
+                    <Shirt className="w-3.5 h-3.5" />
+                    <span>2D Model Compatible</span>
+                  </span>
                 </div>
               </div>
-
-              <div className="space-y-1">
-                <p className="text-xs text-charcoal-light uppercase font-semibold">
-                  {activeGarment.brand}
-                </p>
-                <h3 className="font-serif text-lg font-medium text-charcoal">
-                  {activeGarment.title}
-                </h3>
-                <p className="text-xs text-charcoal-muted">
-                  Color: {activeGarment.color} • Material: {activeGarment.material}
-                </p>
+            ) : (
+              <div className="bg-white rounded-3xl p-8 border border-canvas-dark text-center text-xs text-charcoal-muted">
+                No catalog garments available. Please verify backend API connection.
               </div>
-
-              <div className="pt-2 flex items-center justify-between border-t border-canvas-subtle text-xs">
-                <span className="font-semibold text-charcoal text-base">${activeGarment.price}</span>
-                <span className="text-emerald-700 font-medium flex items-center space-x-1">
-                  <Shirt className="w-3.5 h-3.5" />
-                  <span>2D Model Compatible</span>
-                </span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Submit Action Well */}
@@ -215,15 +281,16 @@ export const TryOnPage: React.FC = () => {
             <Button
               variant="accent"
               size="lg"
-              disabled={!uploadedPersonImage}
+              disabled={!uploadedPersonFile || !activeGarment || isSubmitting}
+              isLoading={isSubmitting}
               onClick={handleSubmitTryOn}
               className="w-full shadow-md"
             >
-              <span>Generate Virtual Try-On</span>
+              <span>{currentUser ? 'Generate Virtual Try-On' : 'Sign In to Generate'}</span>
               <Sparkles className="w-4 h-4 ml-2" />
             </Button>
 
-            {!uploadedPersonImage && (
+            {!uploadedPersonFile && (
               <p className="text-[11px] text-center text-charcoal-light">
                 Please upload your photograph in Step 1 to enable generation.
               </p>

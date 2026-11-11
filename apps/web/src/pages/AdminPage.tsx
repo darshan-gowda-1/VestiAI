@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Product, GarmentCategory } from '../types';
-import { Shield, Plus, Trash2, Activity } from 'lucide-react';
+import { ApiError } from '../services/api';
+import { GarmentCategory } from '../types';
+import { Shield, Plus, Trash2, Activity, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Dialog } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 
 export const AdminPage: React.FC = () => {
-  const { products, jobsHistory, deleteProduct, addProduct, currentUser, login } = useApp();
+  const { products, jobsHistory, deleteProduct, addProduct, currentUser } = useApp();
   const [activeTab, setActiveTab] = useState<'products' | 'jobs'>('products');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [adminError, setAdminError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
   const [title, setTitle] = useState('');
@@ -20,31 +24,55 @@ export const AdminPage: React.FC = () => {
   const [price, setPrice] = useState('50');
   const [description, setDescription] = useState('');
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  if (!currentUser || currentUser.role !== 'admin') {
+    return (
+      <div className="max-w-lg mx-auto px-6 py-20 text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+          <Shield className="w-6 h-6" />
+        </div>
+        <h2 className="font-serif text-2xl font-medium text-charcoal">Administrator Access Required</h2>
+        <p className="text-xs text-charcoal-muted leading-relaxed">
+          This workspace is restricted to accounts with the <code className="font-mono">admin</code> role.
+        </p>
+        <Link to="/login">
+          <Button variant="primary" size="sm">Sign In with Admin Account</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !color) return;
+    if (!title.trim() || !color.trim()) return;
+    setAdminError(null);
+    setIsSubmitting(true);
+    try {
+      await addProduct({
+        title: title.trim(),
+        brand: brand.trim() || 'Atelier Vesti',
+        category,
+        color: color.trim(),
+        price: parseFloat(price) || 45,
+        description: description.trim() || 'Premium upper-body apparel tailored for virtual try-on.',
+      });
+      setIsAddModalOpen(false);
+      setTitle('');
+      setColor('');
+      setDescription('');
+    } catch (err) {
+      setAdminError(err instanceof ApiError ? err.message : 'Failed to create product.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    const newProd: Product = {
-      id: `prod-${Date.now()}`,
-      title,
-      brand,
-      category,
-      categoryLabel: category === 't-shirt' ? 'T-Shirts' : category === 'shirt' ? 'Shirts' : category === 'sweatshirt' ? 'Sweatshirts' : 'Blouses',
-      color,
-      price: parseFloat(price) || 45,
-      imageUrl: products[0].imageUrl,
-      flatGarmentUrl: products[0].flatGarmentUrl,
-      description: description || 'Premium upper-body apparel tailored for virtual try-on.',
-      material: '100% Organic Cotton',
-      fit: 'Regular Fit',
-      isFeatured: false,
-    };
-
-    addProduct(newProd);
-    setIsAddModalOpen(false);
-    setTitle('');
-    setColor('');
-    setDescription('');
+  const handleDeleteProduct = async (productId: string) => {
+    setAdminError(null);
+    try {
+      await deleteProduct(productId);
+    } catch (err) {
+      setAdminError(err instanceof ApiError ? err.message : 'Failed to archive product.');
+    }
   };
 
   return (
@@ -63,13 +91,14 @@ export const AdminPage: React.FC = () => {
             Manage catalog tops, monitor asynchronous worker queues, and audit system performance.
           </p>
         </div>
-
-        {currentUser?.role !== 'admin' && (
-          <Button variant="secondary" size="sm" onClick={() => login('admin')} className="text-xs">
-            Switch to Admin Role
-          </Button>
-        )}
       </div>
+
+      {adminError && (
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+          <span>{adminError}</span>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex items-center space-x-4 border-b border-canvas-dark/60">
@@ -153,7 +182,7 @@ export const AdminPage: React.FC = () => {
                       </td>
                       <td className="py-3.5 px-6 text-right">
                         <button
-                          onClick={() => deleteProduct(p.id)}
+                          onClick={() => handleDeleteProduct(p.id)}
                           className="p-1.5 rounded-lg text-charcoal-light hover:text-red-600 hover:bg-red-50 transition"
                           title="Archive Product"
                         >
@@ -305,7 +334,7 @@ export const AdminPage: React.FC = () => {
             <Button type="button" variant="outline" size="sm" onClick={() => setIsAddModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" size="sm">
+            <Button type="submit" variant="primary" size="sm" isLoading={isSubmitting}>
               Publish Garment
             </Button>
           </div>
