@@ -81,3 +81,14 @@ All primary text and interactive combinations have been audited to surpass WCAG 
 - **Semantic Structure:** Clear `<header>`, `<nav>`, `<main>`, `<section>`, `<footer>` markup.
 - **Touch Targets:** Minimum 44×44px hit areas on mobile viewports.
 
+
+
+---
+
+## VestiAI 2.0 Component & Identity Additions (`V2-TASK-11..15`)
+
+- **Brand Mark & Wordmark (`src/components/common/BrandLogo.tsx`):** Original VestiAI hanger-crest SVG icon paired with `Playfair Display` serif wordmark (`sm`, `md`, `lg` sizes, `dark`/`light` variants).
+- **Toast Notification System (`src/components/ui/toast.tsx`):** `ToastProvider` + `useToast()` hook (`success`, `error`, `info`, 4s auto-dismiss, accessible `role="status"`).
+- **Loading Indicator (`src/components/ui/spinner.tsx`):** `LoadingSpinner` with accessible label and `accent` indicator.
+- **Camera Permission Card (`src/components/camera/CameraPermissionCard.tsx`):** Handles `not-started`, `requesting`, `denied`, `unavailable`, `stopped`, and `error` states with explicit user-initiated `Start Camera` and `Upload Photo` fallback actions.
+- **Route Aliases (`src/App.tsx`):** Supports both `/try-on` & `/tryon`, `/store` & `/catalog`, `/product/:id` & `/products/:id`, `/try-on/result/:jobId` & `/result/:jobId`, and `/saved-looks` & `/history`.

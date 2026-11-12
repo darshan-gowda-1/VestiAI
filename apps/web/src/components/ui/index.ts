@@ -5,4 +5,6 @@ export * from './input';
 export * from './skeleton';
 export * from './dialog';
 export * from './comparison-slider';
+export * from './toast';
+export * from './spinner';
 

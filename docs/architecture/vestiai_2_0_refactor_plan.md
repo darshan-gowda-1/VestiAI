@@ -39,3 +39,4 @@ Inspired functionally (never copying code, branding, or proprietary assets) by `
 - **Backend (`apps/api/requirements.txt`):** FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, Redis, Boto3, Pillow — all sufficient; no unnecessary dependencies needed.
 - **Extension (`apps/extension`):** Will use TypeScript + Vite + `@types/chrome` + React when created in Phase 10.
 - **Git Safety (`TASK-09`):** Verified `.gitignore` excludes `.env`, `venv/`, `node_modules/`, `storage_data/`, `dist/`, and `__pycache__/`.
+

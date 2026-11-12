@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { ArrowRight, Heart, User, Menu, X, Shield, Sparkles, AlertCircle } from 'lucide-react';
+import { BrandLogo } from '../common/BrandLogo';
 
 export const Navbar: React.FC = () => {
   const { wishlist, currentUser, logout, sessionExpiredMessage, clearSessionExpiredMessage } = useApp();
@@ -9,8 +10,8 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
 
   const navLinks = [
-    { label: 'Catalog', href: '/catalog' },
-    { label: 'Try-On Studio', href: '/tryon' },
+    { label: 'Try On', href: '/try-on' },
+    { label: 'Explore Styles', href: '/store' },
     { label: 'How It Works', href: '/#how-it-works' },
     { label: 'Wishlist', href: '/wishlist', badge: wishlist.length > 0 ? wishlist.length : undefined },
     { label: 'History', href: '/history' },
@@ -33,15 +34,8 @@ export const Navbar: React.FC = () => {
       <header className="sticky top-0 z-40 bg-canvas/90 backdrop-blur-md border-b border-canvas-dark/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-9 h-9 rounded-lg bg-charcoal flex items-center justify-center text-canvas font-serif font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
-              V
-            </div>
-            <div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-charcoal">
-                Vesti<span className="text-accent">AI</span>
-              </span>
-            </div>
+          <Link to="/" className="flex items-center group">
+            <BrandLogo size="md" />
           </Link>
 
           {/* Desktop Nav Links */}
