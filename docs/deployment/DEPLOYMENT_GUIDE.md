@@ -92,3 +92,4 @@ docker compose -f docker-compose.prod.yml exec api python /app/scripts/seed_cata
 Every push and pull request to `master` or `main` automatically runs:
 - **Backend Job:** Python 3.12 setup, `pip install -r requirements.txt`, and `pytest -v`.
 - **Frontend Job:** Node.js 20 setup, `npm ci`, `npm test` (Vitest), `npm run lint` (`tsc --noEmit`), and `npm run build` (`vite build`).
+

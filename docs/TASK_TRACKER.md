@@ -179,5 +179,5 @@
 | **TASK-175** | Security & Privacy Test Suite | Phase 12 | Critical | Completed | TASK-163..174 | `tests/test_security_and_privacy.py` verified headers, 429, consents, secret guard. |
 | **TASK-176..191** | Phase 13: Testing and Quality Assurance (Backend 46 tests, Performance benchmarks, Frontend Vitest 5 tests, TypeScript & Vite build, `docs/reports/test_report.md`) | Phase 13 | High | Completed | Phase 12 | Backend `46 passed`, Vitest `5 passed`, `tsc --noEmit` & `vite build` passed, report written. |
 | **TASK-192..209** | Phase 14: Deployment & DevOps (Dockerfiles, `docker-compose.prod.yml`, Nginx SPA/API proxy, Render & Vercel configs, GitHub Actions CI, `DEPLOYMENT_GUIDE.md`) | Phase 14 | High | Completed | Phase 13 | Container, cloud, CI/CD, and deployment docs created and validated. |
-| **TASK-210..245** | Phases 15 through 16 (College Report, Presentation, GitHub Delivery) | Phases 15-16 | High | Scheduled | Phase 14 | Documentation and final release deliverables. |
+| **TASK-210..245** | Phases 15 through 16: College Academic Report, Presentation & Final Delivery (`architecture_and_er.md`, `VestiAI_Final_Project_Report.md`, `VestiAI_Presentation_Deck.md`, `DEMO_WALKTHROUGH.md`, final verification) | Phases 15-16 | High | Completed | Phase 14 | All academic report, diagram, presentation, and release deliverables completed and verified. |
 

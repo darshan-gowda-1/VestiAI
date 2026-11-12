@@ -130,3 +130,4 @@ volumes:
   postgres_prod_data:
   redis_prod_data:
   media_prod_data:
+
