@@ -6,7 +6,10 @@ import { ImageUploader } from '../components/tryon/ImageUploader';
 import { GuidanceCard } from '../components/tryon/GuidanceCard';
 import { GarmentSelectorModal } from '../components/tryon/GarmentSelectorModal';
 import { JobProgressView } from '../components/tryon/JobProgressView';
-import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle, Lock } from 'lucide-react';
+import { LiveCameraStage } from '../components/camera/LiveCameraStage';
+import { useCameraStream } from '../hooks/useCameraStream';
+import { useToast } from '../components/ui/toast';
+import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle, Lock, Camera, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
@@ -36,6 +39,36 @@ export const TryOnPage: React.FC = () => {
   const [consentError, setConsentError] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inputMode, setInputMode] = useState<'camera' | 'upload'>('camera');
+
+  const { showToast } = useToast();
+  const camera = useCameraStream();
+
+  const handleCaptureFrame = async () => {
+    const captured = await camera.captureFrame();
+    if (captured) {
+      setUploadedPersonPhoto(captured.previewUrl, captured.file);
+      showToast({
+        title: 'Frame Captured',
+        description: 'Your camera snapshot is ready for 2D AI try-on.',
+        variant: 'success',
+      });
+    }
+  };
+
+  const handleRetake = () => {
+    setUploadedPersonPhoto(null, null);
+    if (camera.cameraState !== 'active') {
+      void camera.startCamera();
+    }
+  };
+
+  const handleSwitchMode = (mode: 'camera' | 'upload') => {
+    setInputMode(mode);
+    if (mode === 'upload' && camera.cameraState === 'active') {
+      camera.stopCamera('stopped');
+    }
+  };
 
   useEffect(() => {
     const prodId = searchParams.get('productId');
@@ -149,21 +182,70 @@ export const TryOnPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Photo Upload & Guidance (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-2">
-            <h2 className="font-serif text-xl font-medium text-charcoal flex items-center justify-between">
-              <span>Step 1: Your Photograph</span>
-              {uploadedPersonImage && (
-                <span className="text-xs text-emerald-700 font-sans font-medium flex items-center space-x-1">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Photo Ready</span>
-                </span>
-              )}
-            </h2>
-            <ImageUploader
-              image={uploadedPersonImage}
-              onImageSelected={(url, file) => setUploadedPersonPhoto(url, file)}
-              onImageRemoved={() => setUploadedPersonPhoto(null, null)}
-            />
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-serif text-xl font-medium text-charcoal flex items-center gap-2">
+                <span>Step 1: Camera or Photograph</span>
+                {uploadedPersonImage && (
+                  <span className="text-xs text-emerald-700 font-sans font-medium flex items-center space-x-1">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Photo Ready</span>
+                  </span>
+                )}
+              </h2>
+
+              <div className="inline-flex rounded-xl border border-canvas-dark bg-canvas-subtle p-1">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchMode('camera')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
+                    inputMode === 'camera'
+                      ? 'bg-white text-charcoal shadow-sm'
+                      : 'text-charcoal-muted hover:text-charcoal'
+                  }`}
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Live Camera</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSwitchMode('upload')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
+                    inputMode === 'upload'
+                      ? 'bg-white text-charcoal shadow-sm'
+                      : 'text-charcoal-muted hover:text-charcoal'
+                  }`}
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Upload Photo</span>
+                </button>
+              </div>
+            </div>
+
+            {inputMode === 'camera' ? (
+              <LiveCameraStage
+                videoRef={camera.videoRef}
+                cameraState={camera.cameraState}
+                errorMessage={camera.errorMessage}
+                facingMode={camera.facingMode}
+                devices={camera.devices}
+                selectedDeviceId={camera.selectedDeviceId}
+                capturedPreviewUrl={uploadedPersonImage}
+                onStartCamera={() => void camera.startCamera()}
+                onStopCamera={() => camera.stopCamera('stopped')}
+                onSwitchCamera={() => void camera.switchCamera()}
+                onSelectDevice={(id) => void camera.selectDevice(id)}
+                onCaptureFrame={() => void handleCaptureFrame()}
+                onRetake={handleRetake}
+                onSwitchToUpload={() => handleSwitchMode('upload')}
+              />
+            ) : (
+              <ImageUploader
+                image={uploadedPersonImage}
+                onImageSelected={(url, file) => setUploadedPersonPhoto(url, file)}
+                onImageRemoved={() => setUploadedPersonPhoto(null, null)}
+              />
+            )}
           </div>
 
           <GuidanceCard />

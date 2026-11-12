@@ -33,3 +33,4 @@ describe('VestiAI 2.0 Landing Page & Footer', () => {
     expect(screen.getByRole('link', { name: /Privacy Policy/i })).toHaveAttribute('href', '/privacy');
   });
 });
+
