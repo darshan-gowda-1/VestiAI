@@ -17,6 +17,8 @@ import {
   ArrowLeft,
   Heart,
   AlertCircle,
+  Camera,
+  ExternalLink,
 } from 'lucide-react';
 
 export const ResultPage: React.FC = () => {
@@ -30,6 +32,8 @@ export const ResultPage: React.FC = () => {
     deleteJob,
     wishlist,
     toggleWishlist,
+    setUploadedPersonPhoto,
+    setSelectedGarment,
   } = useApp();
   const navigate = useNavigate();
 
@@ -141,17 +145,43 @@ export const ResultPage: React.FC = () => {
     }
   };
 
+  const handleRetakePhoto = () => {
+    setUploadedPersonPhoto(null, null);
+    setSelectedGarment(job.product);
+    navigate('/try-on');
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       <div>
         <Link
-          to="/tryon"
+          to="/try-on"
           className="inline-flex items-center space-x-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Return to Fitting Studio</span>
+          <span>Return to Try-On Studio</span>
         </Link>
       </div>
+
+      {job.status === 'failed' && (
+        <div className="p-5 rounded-2xl bg-red-50 border border-red-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3 text-red-900">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">AI Try-On Generation Failed</p>
+              <p className="text-xs text-red-700">
+                {job.error || 'The AI worker could not process this photo. Please try a clearer front-facing shot.'}
+              </p>
+            </div>
+          </div>
+          <Link to={`/try-on?productId=${job.product.id}`} className="shrink-0">
+            <Button variant="primary" size="sm" className="gap-1.5">
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry in Studio</span>
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {actionError && (
         <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center space-x-2">
@@ -221,12 +251,24 @@ export const ResultPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-between text-xs text-charcoal-light font-mono">
-              <span className="truncate max-w-[180px]">Job: {job.id}</span>
-              <span className="text-emerald-700 font-sans font-medium flex items-center space-x-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{job.processingTimeMs ? `${(job.processingTimeMs / 1000).toFixed(2)}s` : 'Completed'}</span>
-              </span>
+            <div className="pt-2 border-t border-canvas-subtle space-y-1.5 text-xs text-charcoal-light">
+              <div className="flex items-center justify-between font-mono">
+                <span className="truncate max-w-[180px]">Model: {job.modelName || '2d-tryon'}</span>
+                <span className="text-emerald-700 font-sans font-medium flex items-center space-x-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>{job.processingTimeMs ? `${(job.processingTimeMs / 1000).toFixed(2)}s` : 'Completed'}</span>
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span>Generated: {new Date(job.createdAt).toLocaleDateString()}</span>
+                <Link
+                  to={`/product/${job.product.id}`}
+                  className="inline-flex items-center gap-1 text-accent hover:underline font-medium"
+                >
+                  <span>View Product</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -239,7 +281,7 @@ export const ResultPage: React.FC = () => {
               className="w-full shadow-sm flex items-center justify-center space-x-2"
             >
               <Bookmark className={`w-4 h-4 ${isSavedLook ? 'fill-current' : ''}`} />
-              <span>{isSavedLook ? 'Saved to My Looks' : 'Save Look to Collection'}</span>
+              <span>{isSavedLook ? 'Saved to My Looks' : 'Save Look'}</span>
             </Button>
 
             <Button
@@ -249,15 +291,26 @@ export const ResultPage: React.FC = () => {
               className="w-full flex items-center justify-center space-x-2"
             >
               <Download className="w-4 h-4" />
-              <span>Download High-Res Preview</span>
+              <span>Download Result</span>
             </Button>
 
-            <Link to="/tryon" className="block w-full">
-              <Button variant="outline" size="md" className="w-full flex items-center justify-center space-x-2">
-                <RefreshCw className="w-4 h-4" />
-                <span>Try Another Upper-Body Top</span>
+            <div className="grid grid-cols-2 gap-2">
+              <Link to="/try-on" className="block w-full">
+                <Button variant="outline" size="sm" className="w-full flex items-center justify-center space-x-1.5 text-xs">
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Try Another Garment</span>
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRetakePhoto}
+                className="w-full flex items-center justify-center space-x-1.5 text-xs"
+              >
+                <Camera className="w-3.5 h-3.5" />
+                <span>Retake Photo</span>
               </Button>
-            </Link>
+            </div>
 
             <Button
               variant="ghost"
