@@ -10,8 +10,48 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging, logger
-from app.db.session import engine
+from app.db.session import AsyncSessionLocal, engine
 from app.schemas.common import ErrorResponse
+from app.services.catalog_service import CatalogService, SAMPLE_CATALOG_ITEMS
+from app.services.storage_service import get_storage_backend
+
+
+def _render_seed_garment_png(category: str, color_name: str) -> bytes:
+    """Render a minimal 768x1024 flat-lay garment PNG when seeding cloud storage."""
+    from io import BytesIO
+    from PIL import Image, ImageDraw
+
+    color_map = {
+        "Navy Blue": (30, 58, 95),
+        "Warm Off-White": (239, 236, 230),
+        "Sky Blue": (142, 174, 201),
+        "Olive Green": (92, 109, 83),
+        "Crisp White": (250, 249, 246),
+        "Charcoal Grey": (51, 53, 57),
+        "Heather Grey": (163, 166, 172),
+        "Forest Green": (43, 67, 54),
+        "Champagne Beige": (229, 214, 197),
+        "Midnight Black": (31, 31, 36),
+        "Navy & White Stripe": (34, 59, 96),
+        "Earthy Terracotta": (168, 90, 50),
+    }
+    img = Image.new("RGB", (768, 1024), (248, 247, 244))
+    draw = ImageDraw.Draw(img)
+    fill = color_map.get(color_name, (60, 75, 95))
+    outline = (42, 42, 42)
+    if category == "sweatshirt":
+        points = [(240, 220), (140, 320), (70, 620), (170, 650), (225, 430), (225, 860), (543, 860), (543, 430), (598, 650), (698, 620), (628, 320), (528, 220)]
+    elif category == "shirt":
+        points = [(245, 210), (150, 290), (85, 580), (175, 605), (225, 410), (225, 860), (543, 860), (543, 410), (593, 605), (683, 580), (618, 290), (523, 210)]
+    elif category == "blouse":
+        points = [(255, 220), (175, 310), (110, 520), (200, 545), (235, 410), (235, 850), (533, 850), (533, 410), (568, 545), (658, 520), (593, 310), (513, 220)]
+    else:
+        points = [(245, 210), (165, 300), (100, 460), (195, 505), (230, 405), (230, 840), (538, 840), (538, 405), (573, 505), (668, 460), (603, 300), (523, 210)]
+    draw.polygon(points, fill=fill, outline=outline, width=4)
+    draw.arc([305, 190, 463, 275], start=0, end=180, fill=(248, 247, 244), width=8)
+    buf = BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    return buf.getvalue()
 
 
 @asynccontextmanager
@@ -24,6 +64,21 @@ async def lifespan(app: FastAPI):
         raise RuntimeError(
             "Insecure default AUTH_SECRET_KEY detected in production environment."
         )
+    if settings.AUTO_SEED_CATALOG:
+        try:
+            async with AsyncSessionLocal() as db:
+                seeded = await CatalogService.seed_sample_catalog(db)
+            if seeded > 0:
+                storage = get_storage_backend()
+                for item in SAMPLE_CATALOG_ITEMS:
+                    storage.put_object(
+                        item["image_key"],
+                        _render_seed_garment_png(item["category"], item["color"]),
+                        content_type="image/png",
+                    )
+                logger.info("Auto-seeded %s sample catalog products and media assets.", seeded)
+        except Exception as exc:
+            logger.warning("Auto-seed catalog skipped: %s", exc)
     logger.info("Starting %s in %s mode", settings.APP_NAME, settings.ENVIRONMENT)
     yield
     await engine.dispose()

@@ -77,6 +77,7 @@ class Settings(BaseSettings):
     # Redis Queue & Worker
     REDIS_URL: str = "redis://localhost:6379/0"
     WORKER_AUTO_DISPATCH: bool = False
+    AUTO_SEED_CATALOG: bool = False
     MAX_JOB_RETRIES: int = 2
 
     # Storage

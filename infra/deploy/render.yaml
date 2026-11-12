@@ -23,6 +23,10 @@ services:
         value: production
       - key: DEBUG
         value: "False"
+      - key: WORKER_AUTO_DISPATCH
+        value: "True"
+      - key: AUTO_SEED_CATALOG
+        value: "True"
       - key: AUTH_SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
@@ -46,49 +50,9 @@ services:
         sync: false
       - key: S3_BUCKET
         sync: false
+      - key: S3_REGION
+        value: auto
       - key: S3_ACCESS_KEY
         sync: false
       - key: S3_SECRET_KEY
         sync: false
-
-  - type: worker
-    name: vestiai-worker
-    runtime: docker
-    dockerfilePath: ./apps/api/Dockerfile
-    dockerContext: ./apps/api
-    dockerCommand: python -m app.workers.tryon_worker
-    plan: free
-    envVars:
-      - key: ENVIRONMENT
-        value: production
-      - key: DEBUG
-        value: "False"
-      - key: AUTH_SECRET_KEY
-        fromService:
-          type: web
-          name: vestiai-api
-          envVarKey: AUTH_SECRET_KEY
-      - key: DATABASE_URL
-        fromDatabase:
-          name: vestiai-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: vestiai-redis
-          property: connectionString
-      - key: STORAGE_BACKEND
-        value: s3
-      - key: MODEL_NAME
-        value: remote
-      - key: REMOTE_INFERENCE_URL
-        sync: false
-      - key: S3_ENDPOINT
-        sync: false
-      - key: S3_BUCKET
-        sync: false
-      - key: S3_ACCESS_KEY
-        sync: false
-      - key: S3_SECRET_KEY
-        sync: false
-
