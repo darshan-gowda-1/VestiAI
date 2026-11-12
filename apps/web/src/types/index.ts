@@ -15,6 +15,10 @@ export interface Product {
   fit: string;
   isFeatured?: boolean;
   isActive?: boolean;
+  currency?: string;
+  retailerUrl?: string | null;
+  source?: string;
+  createdAt?: string;
 }
 
 export type JobStatus = 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';

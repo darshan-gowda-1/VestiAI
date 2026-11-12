@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { ApiError, catalogApi, mapProductDto } from '../services/api';
 import { Product } from '../types';
-import { Sparkles, Heart, ArrowLeft, ShieldCheck, Info, Check } from 'lucide-react';
+import { Sparkles, Heart, ArrowLeft, ShieldCheck, Info, Check, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
@@ -63,8 +63,8 @@ export const ProductDetailPage: React.FC = () => {
       <div className="max-w-lg mx-auto px-6 py-20 text-center space-y-4">
         <h2 className="font-serif text-2xl font-medium text-charcoal">Product Unavailable</h2>
         <p className="text-sm text-charcoal-muted">{error || 'This garment could not be found.'}</p>
-        <Link to="/catalog">
-          <Button variant="primary">Return to Catalog</Button>
+        <Link to="/store">
+          <Button variant="primary">Return to Store</Button>
         </Link>
       </div>
     );
@@ -79,8 +79,13 @@ export const ProductDetailPage: React.FC = () => {
 
   const handleStartTryOn = () => {
     setSelectedGarment(product);
-    navigate(`/tryon?productId=${product.id}`);
+    navigate(`/try-on?productId=${product.id}`);
   };
+
+  const safeRetailerUrl =
+    product.retailerUrl && /^https?:\/\//i.test(product.retailerUrl)
+      ? product.retailerUrl
+      : null;
 
   const handleWishlist = async () => {
     try {
@@ -203,9 +208,26 @@ export const ProductDetailPage: React.FC = () => {
               <Sparkles className="w-4 h-4 ml-2 text-accent" />
             </Button>
 
-            <div className="flex items-center space-x-2 text-[11px] text-charcoal-light">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Consent required before upload • Your photo remains private</span>
+            {safeRetailerUrl && (
+              <a
+                href={safeRetailerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full"
+              >
+                <Button variant="outline" size="md" className="w-full gap-2">
+                  <span>Visit Original Retailer</span>
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
+              </a>
+            )}
+
+            <div className="flex items-center justify-between text-[11px] text-charcoal-light">
+              <div className="flex items-center space-x-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Consent required before upload • Private storage</span>
+              </div>
+              <span>Source: {product.source || 'VestiAI Store'}</span>
             </div>
           </div>
 

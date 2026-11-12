@@ -14,7 +14,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     setSelectedGarment(product);
-    navigate(`/tryon?productId=${product.id}`);
+    navigate(`/try-on?productId=${product.id}`);
   };
 
   const handleWishlistClick = async (e: React.MouseEvent) => {
@@ -30,7 +30,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div className="group relative bg-white rounded-2xl border border-canvas-dark/60 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden">
       {/* Garment Image Well */}
-      <Link to={`/products/${product.id}`} className="relative block aspect-[4/5] bg-canvas-subtle overflow-hidden">
+      <Link to={`/product/${product.id}`} className="relative block aspect-[4/5] bg-canvas-subtle overflow-hidden">
         <img
           src={product.imageUrl}
           alt={product.title}
@@ -66,7 +66,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             {product.brand}
           </p>
           <Link
-            to={`/products/${product.id}`}
+            to={`/product/${product.id}`}
             className="font-serif text-base font-medium text-charcoal group-hover:text-accent transition-colors line-clamp-1"
           >
             {product.title}

@@ -15,7 +15,8 @@ export const CatalogPage: React.FC = () => {
   const [category, setCategory] = useState<GarmentCategory | 'all'>(
     (searchParams.get('category') as GarmentCategory) || 'all'
   );
-  const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'title'>('featured');
+  const [priceRange, setPriceRange] = useState<'all' | 'under-35' | '35-65' | 'over-65'>('all');
+  const [sortBy, setSortBy] = useState<'featured' | 'newest' | 'price-asc' | 'price-desc' | 'title'>('featured');
 
   // Sync category query param
   useEffect(() => {
@@ -42,15 +43,23 @@ export const CatalogPage: React.FC = () => {
           p.brand.toLowerCase().includes(search.toLowerCase()) ||
           p.color.toLowerCase().includes(search.toLowerCase()) ||
           p.material.toLowerCase().includes(search.toLowerCase());
-        return matchesCategory && matchesSearch;
+        const matchesPrice =
+          priceRange === 'all' ||
+          (priceRange === 'under-35' && p.price < 35) ||
+          (priceRange === '35-65' && p.price >= 35 && p.price <= 65) ||
+          (priceRange === 'over-65' && p.price > 65);
+        return matchesCategory && matchesSearch && matchesPrice;
       })
       .sort((a, b) => {
         if (sortBy === 'price-asc') return a.price - b.price;
         if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'newest') {
+          return (b.createdAt || '').localeCompare(a.createdAt || '');
+        }
         if (sortBy === 'title') return a.title.localeCompare(b.title);
         return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
       });
-  }, [products, category, search, sortBy]);
+  }, [products, category, search, priceRange, sortBy]);
 
   const handleCategoryChange = (newCat: GarmentCategory | 'all') => {
     setCategory(newCat);
@@ -65,6 +74,7 @@ export const CatalogPage: React.FC = () => {
   const handleResetFilters = () => {
     setSearch('');
     setCategory('all');
+    setPriceRange('all');
     setSortBy('featured');
     searchParams.delete('category');
     setSearchParams(searchParams);
@@ -75,10 +85,10 @@ export const CatalogPage: React.FC = () => {
       {/* Header */}
       <div className="space-y-2 border-b border-canvas-dark/60 pb-6">
         <h1 className="font-serif text-3xl sm:text-4xl font-medium text-charcoal">
-          Upper-Body Collection
+          VestiAI Fashion Store
         </h1>
         <p className="text-sm text-charcoal-muted font-light max-w-2xl">
-          Browse our catalog of shirts, t-shirts, sweatshirts, and blouses. Every top is optimized for 2D diffusion virtual try-on.
+          Discover curated tops and retailer styles. Search, filter by category or price, save favorites, and launch live 2D virtual try-on.
         </p>
       </div>
 
@@ -115,13 +125,27 @@ export const CatalogPage: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+            <select
+              aria-label="Filter by price"
+              value={priceRange}
+              onChange={(e) => setPriceRange(e.target.value as typeof priceRange)}
+              className="bg-white border border-canvas-dark text-xs text-charcoal rounded-full px-3 py-2 focus:outline-none focus:border-charcoal shadow-xs cursor-pointer"
+            >
+              <option value="all">All Prices</option>
+              <option value="under-35">Under $35</option>
+              <option value="35-65">$35 – $65</option>
+              <option value="over-65">Over $65</option>
+            </select>
+
             <SlidersHorizontal className="w-3.5 h-3.5 text-charcoal-muted" />
             <select
+              aria-label="Sort products"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               className="bg-white border border-canvas-dark text-xs text-charcoal rounded-full px-3 py-2 focus:outline-none focus:border-charcoal shadow-xs cursor-pointer"
             >
               <option value="featured">Sort by: Featured</option>
+              <option value="newest">Newest</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
               <option value="title">Alphabetical (A-Z)</option>
