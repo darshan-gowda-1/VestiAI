@@ -54,6 +54,26 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str = "postgresql://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
     DB_ECHO: bool = False
 
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def normalize_async_database_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql+asyncpg://", 1)
+            if v.startswith("postgresql://"):
+                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
+
+    @field_validator("SYNC_DATABASE_URL", mode="before")
+    @classmethod
+    def normalize_sync_database_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql://", 1)
+            if v.startswith("postgresql+asyncpg://"):
+                return v.replace("postgresql+asyncpg://", "postgresql://", 1)
+        return v
+
     # Redis Queue & Worker
     REDIS_URL: str = "redis://localhost:6379/0"
     WORKER_AUTO_DISPATCH: bool = False

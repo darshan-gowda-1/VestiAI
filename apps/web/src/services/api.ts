@@ -21,9 +21,12 @@ export const API_BASE_URL: string =
 
 export const API_ORIGIN: string = (() => {
   try {
+    if (API_BASE_URL.startsWith('/') && typeof window !== 'undefined') {
+      return window.location.origin;
+    }
     return new URL(API_BASE_URL).origin;
   } catch {
-    return 'http://localhost:8000';
+    return typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
   }
 })();
 

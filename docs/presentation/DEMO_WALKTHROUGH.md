@@ -31,3 +31,4 @@
 ### 5. Saved Looks, Deletion & Admin View (4:00 – 5:00)
 - Save the result to History (`/history`) and demonstrate deleting a job (removes DB record + private stored media).
 - Briefly show `/admin` (for admin users) displaying catalog management and job monitoring.
+

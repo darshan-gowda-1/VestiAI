@@ -101,3 +101,4 @@ VestiAI successfully demonstrates a clean, modular, privacy-conscious architectu
 4. SQLAlchemy 2.0 Async ORM Documentation — https://docs.sqlalchemy.org/
 5. React 18 & Vite Documentation — https://react.dev/ & https://vitejs.dev/
 6. Alembic Database Migrations — https://alembic.sqlalchemy.org/
+

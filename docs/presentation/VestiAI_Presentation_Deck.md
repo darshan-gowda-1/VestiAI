@@ -88,3 +88,4 @@ Stack: React 18 · TypeScript · FastAPI · PostgreSQL 16 · Redis 7 · IDM-VTON
 ### Slide 11: Conclusion & Future Scope
 - **Delivered:** End-to-end, tested, containerized, privacy-first 2D virtual try-on platform.
 - **Future Scope:** Multi-category garments, WebSocket real-time job updates, automated garment segmentation on catalog upload.
+

@@ -16,6 +16,7 @@ services:
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: ./apps/api
     plan: free
+    preDeployCommand: alembic upgrade head
     healthCheckPath: /health
     envVars:
       - key: ENVIRONMENT

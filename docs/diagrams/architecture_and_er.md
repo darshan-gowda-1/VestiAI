@@ -123,3 +123,4 @@ flowchart TD
     Shopper -->|"4. Poll Status & Fetch Signed URL"| JobAPI
     JobAPI -->|"Signed Output Image"| Shopper
 ```
+
