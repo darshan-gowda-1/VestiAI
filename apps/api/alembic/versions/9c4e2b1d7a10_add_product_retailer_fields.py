@@ -35,3 +35,4 @@ def downgrade() -> None:
     op.drop_column("products", "source")
     op.drop_column("products", "retailer_url")
     op.drop_column("products", "currency")
+

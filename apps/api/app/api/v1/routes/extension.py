@@ -167,3 +167,4 @@ async def create_extension_tryon_job(
         background_tasks.add_task(process_single_job, job.id)
 
     return TryOnJobCreateResponse(job_id=job.id, status="queued")
+

@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "VestiAI Virtual Try-On",
+  "version": "2.0.0",
+  "description": "Select a clothing product image on supported shopping sites and launch VestiAI 2D virtual try-on.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "sidePanel"
+  ],
+  "action": {
+    "default_title": "VestiAI Virtual Try-On",
+    "default_popup": "popup.html"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
+
