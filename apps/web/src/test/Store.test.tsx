@@ -100,3 +100,4 @@ describe('VestiAI 2.0 Fashion Store (/store & /product/:id)', () => {
     expect(screen.getByText(/Source: Maison Lumiere/i)).toBeInTheDocument();
   });
 });
+

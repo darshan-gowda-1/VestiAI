@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { History, Trash2, Sparkles, Clock, Eye, Bookmark } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -7,7 +7,14 @@ import { Badge } from '../components/ui/badge';
 
 export const HistoryPage: React.FC = () => {
   const { jobsHistory, savedLookIds, deleteJob, deleteAllJobs, currentUser } = useApp();
-  const [filterTab, setFilterTab] = useState<'all' | 'saved'>('all');
+  const location = useLocation();
+  const [filterTab, setFilterTab] = useState<'all' | 'saved'>(
+    location.pathname === '/saved-looks' ? 'saved' : 'all'
+  );
+
+  useEffect(() => {
+    setFilterTab(location.pathname === '/saved-looks' ? 'saved' : 'all');
+  }, [location.pathname]);
 
   const displayedJobs =
     filterTab === 'saved'
