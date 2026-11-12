@@ -24,7 +24,8 @@ class RealtimeBenchmarkReport:
 def compute_frame_flicker_l1(frame_a: Image.Image, frame_b: Image.Image) -> float:
     """Compute normalized mean absolute pixel difference [0..1] between consecutive frames."""
     diff = ImageChops.difference(frame_a.convert("RGB"), frame_b.convert("RGB"))
-    pixels = list(diff.getdata())
+    getter = getattr(diff, "get_flattened_data", diff.getdata)
+    pixels = list(getter())
     if not pixels:
         return 0.0
     total_channel_diff = sum(r + g + b for r, g, b in pixels)

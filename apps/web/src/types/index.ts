@@ -82,10 +82,13 @@ export interface ApiProductDto {
   category: GarmentCategory;
   color: string;
   price: string | number;
+  currency?: string;
   material: string | null;
   fit: string | null;
   image_key: string;
   tryon_image_key: string;
+  retailer_url?: string | null;
+  source?: string;
   is_featured: boolean;
   is_active: boolean;
   created_at: string;
