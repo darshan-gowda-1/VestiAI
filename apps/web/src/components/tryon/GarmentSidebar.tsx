@@ -182,3 +182,4 @@ export const GarmentSidebar: React.FC<GarmentSidebarProps> = ({
     </aside>
   );
 };
+
