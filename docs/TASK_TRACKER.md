@@ -199,8 +199,8 @@
 | **V2-TASK-85..105** | Phase 10: Chrome Extension (`apps/extension` MV3) | V2 Phase 10 | Medium | Completed | V2 Phase 6, 8, 11 | Built Manifest V3 popup, sidepanel, content script extractor, background SW, `EXTENSION_GUIDE.md`, and Vitest suite. |
 | **V2-TASK-106..116** | Phase 11: Backend & Database Updates (`Product` retailer fields + migration, `/categories`, `/products/search`, `/history`, `/retry`, `/extension/*`) | V2 Phase 11 | High | Completed | V2 Phase 1 | Added Alembic migration `9c4e2b1d7a10`, new API routes, URL validation, and backend tests. |
 | **V2-TASK-117..123** | Phase 12: Real-Time Try-On Research & Isolated Prototype | V2 Phase 12 | Low | Completed | V2 Phase 6 | Isolated `realtime_prototype.py` flicker/FPS benchmark + `REALTIME_TRYON_RESEARCH.md` decision memo. |
-| **V2-TASK-124..136** | Phase 13: Security & Privacy (Camera consent/shutdown, external URL validation, upload & rate limits) | V2 Phase 13 | Critical | Scheduled | V2 Phase 4, 10, 11 | Enforce strict camera & extension permission boundaries. |
-| **V2-TASK-137..151** | Phase 14: Testing & QA | V2 Phase 14 | High | Scheduled | V2 Phase 13 | Camera, drag-and-drop, store, extension, E2E, and QA report. |
+| **V2-TASK-124..136** | Phase 13: Security & Privacy (Camera consent/shutdown, external URL validation, upload & rate limits) | V2 Phase 13 | Critical | Completed | V2 Phase 4, 10, 11 | Explicit camera start/cleanup, `http/https` URL validation, consent gate, rate limits & privacy docs verified. |
+| **V2-TASK-137..151** | Phase 14: Testing & QA | V2 Phase 14 | High | Completed | V2 Phase 13 | Backend `50 passed`, Web `21 passed` + build, Extension `3 passed` + build, `test_report.md` updated, CI extended. |
 | **V2-TASK-152..163** | Phase 15: Deployment (Web, API, DB, R2, GPU Worker, Extension config) | V2 Phase 15 | High | Scheduled | V2 Phase 14 | Live production verification. |
 | **V2-TASK-164..176** | Phase 16: Final Documentation & Delivery | V2 Phase 16 | High | Scheduled | V2 Phase 15 | Updated README, diagrams, screenshots, demo script, final release. |
 

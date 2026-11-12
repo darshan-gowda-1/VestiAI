@@ -77,3 +77,4 @@ def run_isolated_video_benchmark(
         mean_flicker_l1=round(mean_flicker, 4),
         meets_realtime_threshold=meets_threshold,
     )
+

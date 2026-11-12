@@ -16,3 +16,4 @@ def test_isolated_realtime_prototype_measures_latency_and_flicker():
 def test_identical_frames_have_zero_flicker():
     img = Image.new("RGB", (64, 64), (100, 120, 140))
     assert compute_frame_flicker_l1(img, img) == 0.0
+

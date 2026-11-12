@@ -87,3 +87,15 @@ cd apps\api
 3. **Frontend Router Future Warnings:** React Router v6 emitted standard `v7_startTransition` and `v7_relativeSplatPath` future-flag warnings to `stderr` during component testing; these do not affect runtime behavior.
 4. **Live GPU / Cloud Smoke Checks Pending:** End-to-end live testing against PostgreSQL, Redis, Cloudflare R2, and real HF Space / IDM-VTON GPU inference will be executed during Phase 14 (Deployment & DevOps).
 
+
+
+---
+
+## 6. VestiAI 2.0 Verification Matrix (`V2-TASK-124..151`)
+
+| Component | Command | Observed Result |
+| :--- | :--- | :--- |
+| **Backend API, AI, Security & Extension APIs** | `.\venv\Scripts\pytest.exe -v` (`apps/api`) | `50 passed, 5 warnings in 12.14s` (SQLite in-memory, `LocalStorageBackend`, `StubTryOnModel`) |
+| **Web Frontend Unit & UI Tests** | `npm.cmd test` (`apps/web`) | `Test Files 8 passed (8)`, `Tests 21 passed (21)` in `2.32s` (Camera, Drag-Drop, Store, Result, Account, Landing, Design System, Core Components) |
+| **Web Type-Check & Build** | `npm.cmd run lint && npm.cmd run build` (`apps/web`) | Passed (`tsc --noEmit` exit `0`; `1718 modules transformed`, built in `2.34s`) |
+| **Chrome Extension (MV3) Tests & Build** | `npm.cmd test && npm.cmd run lint && npm.cmd run build` (`apps/extension`) | `Test Files 1 passed (1)`, `Tests 3 passed (3)` in `1.07s`; `tsc --noEmit` exit `0`; `11 modules transformed` built in `93ms` |

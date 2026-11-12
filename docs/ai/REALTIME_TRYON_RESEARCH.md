@@ -28,3 +28,4 @@ An isolated Python prototype (`run_isolated_video_benchmark`) was implemented to
 
 - **Why:** Consumer hardware (RTX 4050 6GB) and free academic cloud GPUs (Colab T4 16GB) cannot sustain 15+ FPS diffusion inference, and naive 2D sticker overlays violate VestiAI's commitment to honest visual results.
 - **Path Forward:** Continue using `LiveCameraStage` for responsive framing + drag-and-drop garment selection, and trigger `TryOnPipelineService` on captured frames for high-fidelity 2D results. Revisit real-time video only if dedicated low-latency video-try-on GPUs or licensed streaming APIs are provisioned.
+
