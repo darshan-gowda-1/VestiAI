@@ -100,3 +100,4 @@ async def test_pipeline_latency_measurement(tmp_path):
     avg_ms = sum(runs) / len(runs)
     print(f"\n[PERF] TryOnPipeline (Stub 768x1024) avg={avg_ms:.2f}ms runs={[round(r, 1) for r in runs]}")
     assert avg_ms < 5000.0
+

@@ -152,3 +152,4 @@ describe('VestiAI UI Components & State Tests', () => {
     expect(screen.getByText('Balanced Lighting')).toBeInTheDocument();
   });
 });
+

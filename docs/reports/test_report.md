@@ -86,3 +86,4 @@ cd apps\api
 2. **Scoped Apparel Support:** Garment support is strictly limited to 2D virtual try-on for upper-body tops (`t-shirt`, `shirt`, `sweatshirt`, `blouse`); bottoms, outerwear, full-body outfits, and 3D sizing/fit guarantees are intentionally out of scope.
 3. **Frontend Router Future Warnings:** React Router v6 emitted standard `v7_startTransition` and `v7_relativeSplatPath` future-flag warnings to `stderr` during component testing; these do not affect runtime behavior.
 4. **Live GPU / Cloud Smoke Checks Pending:** End-to-end live testing against PostgreSQL, Redis, Cloudflare R2, and real HF Space / IDM-VTON GPU inference will be executed during Phase 14 (Deployment & DevOps).
+
