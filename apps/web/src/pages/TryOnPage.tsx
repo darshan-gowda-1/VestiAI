@@ -6,10 +6,12 @@ import { ImageUploader } from '../components/tryon/ImageUploader';
 import { GuidanceCard } from '../components/tryon/GuidanceCard';
 import { GarmentSelectorModal } from '../components/tryon/GarmentSelectorModal';
 import { JobProgressView } from '../components/tryon/JobProgressView';
+import { GarmentSidebar } from '../components/tryon/GarmentSidebar';
+import { DropTargetStage } from '../components/tryon/DropTargetStage';
 import { LiveCameraStage } from '../components/camera/LiveCameraStage';
 import { useCameraStream } from '../hooks/useCameraStream';
 import { useToast } from '../components/ui/toast';
-import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle, Lock, Camera, Upload } from 'lucide-react';
+import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle, Lock, Camera, Upload, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
@@ -33,6 +35,8 @@ export const TryOnPage: React.FC = () => {
     startTryOnJob,
     cancelTryOnJob,
     currentUser,
+    wishlist,
+    toggleWishlist,
   } = useApp();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,6 +44,7 @@ export const TryOnPage: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputMode, setInputMode] = useState<'camera' | 'upload'>('camera');
+  const [hasClearedGarment, setHasClearedGarment] = useState(false);
 
   const { showToast } = useToast();
   const camera = useCameraStream();
@@ -78,7 +83,24 @@ export const TryOnPage: React.FC = () => {
     }
   }, [searchParams, products, setSelectedGarment]);
 
-  const activeGarment = selectedGarment || products[0] || null;
+  const activeGarment = selectedGarment ?? (hasClearedGarment ? null : products[0] || null);
+
+  const handleSelectOrDropGarment = (product: typeof products[number], viaDrop = false) => {
+    setHasClearedGarment(false);
+    setSelectedGarment(product);
+    if (viaDrop) {
+      showToast({
+        title: 'Garment Selected',
+        description: `${product.title} is ready for 2D AI try-on.`,
+        variant: 'info',
+      });
+    }
+  };
+
+  const handleRemoveGarment = () => {
+    setHasClearedGarment(true);
+    setSelectedGarment(null);
+  };
 
   const handleSubmitTryOn = async () => {
     if (!currentUser) {
@@ -178,18 +200,29 @@ export const TryOnPage: React.FC = () => {
         </div>
       )}
 
-      {/* Main Dual-Pane Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Photo Upload & Guidance (7 cols) */}
-        <div className="lg:col-span-7 space-y-6">
+      {/* Main 3-Column Desktop / Stacked Mobile Workspace */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Garment Selection Sidebar (3 cols on desktop, carousel below camera on mobile) */}
+        <div className="lg:col-span-3 order-2 lg:order-1">
+          <GarmentSidebar
+            products={products}
+            selectedGarmentId={activeGarment?.id || null}
+            wishlistIds={wishlist}
+            onSelectGarment={(p) => handleSelectOrDropGarment(p, false)}
+            onToggleWishlist={(id) => void toggleWishlist(id)}
+          />
+        </div>
+
+        {/* Center Column: Camera / Upload + Drop Target (5 cols on desktop, top on mobile) */}
+        <div className="lg:col-span-5 order-1 lg:order-2 space-y-5">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-serif text-xl font-medium text-charcoal flex items-center gap-2">
-                <span>Step 1: Camera or Photograph</span>
+                <span>Camera or Photo</span>
                 {uploadedPersonImage && (
                   <span className="text-xs text-emerald-700 font-sans font-medium flex items-center space-x-1">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Photo Ready</span>
+                    <span>Ready</span>
                   </span>
                 )}
               </h2>
@@ -222,94 +255,77 @@ export const TryOnPage: React.FC = () => {
               </div>
             </div>
 
-            {inputMode === 'camera' ? (
-              <LiveCameraStage
-                videoRef={camera.videoRef}
-                cameraState={camera.cameraState}
-                errorMessage={camera.errorMessage}
-                facingMode={camera.facingMode}
-                devices={camera.devices}
-                selectedDeviceId={camera.selectedDeviceId}
-                capturedPreviewUrl={uploadedPersonImage}
-                onStartCamera={() => void camera.startCamera()}
-                onStopCamera={() => camera.stopCamera('stopped')}
-                onSwitchCamera={() => void camera.switchCamera()}
-                onSelectDevice={(id) => void camera.selectDevice(id)}
-                onCaptureFrame={() => void handleCaptureFrame()}
-                onRetake={handleRetake}
-                onSwitchToUpload={() => handleSwitchMode('upload')}
-              />
-            ) : (
-              <ImageUploader
-                image={uploadedPersonImage}
-                onImageSelected={(url, file) => setUploadedPersonPhoto(url, file)}
-                onImageRemoved={() => setUploadedPersonPhoto(null, null)}
-              />
-            )}
+            <DropTargetStage
+              products={products}
+              onGarmentDropped={(p) => handleSelectOrDropGarment(p, true)}
+            >
+              {inputMode === 'camera' ? (
+                <LiveCameraStage
+                  videoRef={camera.videoRef}
+                  cameraState={camera.cameraState}
+                  errorMessage={camera.errorMessage}
+                  facingMode={camera.facingMode}
+                  devices={camera.devices}
+                  selectedDeviceId={camera.selectedDeviceId}
+                  capturedPreviewUrl={uploadedPersonImage}
+                  onStartCamera={() => void camera.startCamera()}
+                  onStopCamera={() => camera.stopCamera('stopped')}
+                  onSwitchCamera={() => void camera.switchCamera()}
+                  onSelectDevice={(id) => void camera.selectDevice(id)}
+                  onCaptureFrame={() => void handleCaptureFrame()}
+                  onRetake={handleRetake}
+                  onSwitchToUpload={() => handleSwitchMode('upload')}
+                />
+              ) : (
+                <ImageUploader
+                  image={uploadedPersonImage}
+                  onImageSelected={(url, file) => setUploadedPersonPhoto(url, file)}
+                  onImageRemoved={() => setUploadedPersonPhoto(null, null)}
+                />
+              )}
+            </DropTargetStage>
           </div>
 
           <GuidanceCard />
-
-          {/* Mandatory Consent Checkbox */}
-          <div
-            className={`p-4 rounded-2xl border transition-all ${
-              consentError
-                ? 'border-red-400 bg-red-50/70'
-                : 'border-canvas-dark bg-white shadow-xs'
-            }`}
-          >
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={consentGiven}
-                onChange={(e) => {
-                  setConsentGiven(e.target.checked);
-                  if (e.target.checked) setConsentError(false);
-                }}
-                className="mt-1 h-4 w-4 rounded border-canvas-dark text-accent focus:ring-accent accent-accent cursor-pointer"
-              />
-              <div className="space-y-1 text-xs">
-                <span className="font-semibold text-charcoal block">
-                  Mandatory Processing Consent
-                </span>
-                <span className="text-charcoal-muted leading-relaxed block font-light">
-                  I confirm that I own this photograph or have explicit authorization to process it. I consent to temporary, private 2D diffusion image synthesis for the purpose of virtual clothing preview. I understand I may delete my photo at any time.
-                </span>
-              </div>
-            </label>
-            {consentError && (
-              <div className="mt-2 text-xs text-red-600 font-medium flex items-center space-x-1">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>You must accept the consent agreement before submitting a try-on request.</span>
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* Right Column: Selected Garment & Try-On Action (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Right Column: Selected Garment, Consent & Try This Look (4 cols on desktop) */}
+        <div className="lg:col-span-4 order-3 space-y-5">
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <h2 className="font-serif text-xl font-medium text-charcoal">
-                Step 2: Selected Top
+                Selected Garment
               </h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsModalOpen(true)}
-                disabled={products.length === 0}
-                className="text-xs"
-              >
-                <RefreshCw className="w-3 h-3 mr-1" />
-                <span>Change Garment</span>
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsModalOpen(true)}
+                  disabled={products.length === 0}
+                  className="text-xs"
+                >
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  <span>Replace</span>
+                </Button>
+                {activeGarment && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemoveGarment}
+                    aria-label="Remove garment"
+                    className="text-xs text-charcoal-muted hover:text-red-700"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+              </div>
             </div>
 
             {isCatalogLoading ? (
               <Skeleton className="aspect-[4/5] w-full rounded-3xl" />
             ) : activeGarment ? (
-              <div className="bg-white rounded-3xl p-6 border border-canvas-dark/60 shadow-sm space-y-4">
-                <div className="aspect-[4/5] bg-canvas-subtle rounded-2xl overflow-hidden p-6 flex items-center justify-center relative">
+              <div className="bg-white rounded-3xl p-5 border border-canvas-dark/60 shadow-sm space-y-4">
+                <div className="aspect-[4/4] bg-canvas-subtle rounded-2xl overflow-hidden p-4 flex items-center justify-center relative">
                   <img
                     src={activeGarment.imageUrl}
                     alt={activeGarment.title}
@@ -343,20 +359,56 @@ export const TryOnPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-3xl p-8 border border-canvas-dark text-center text-xs text-charcoal-muted">
-                No catalog garments available. Please verify backend API connection.
+              <div className="bg-white rounded-3xl p-8 border border-dashed border-canvas-dark text-center space-y-2 text-xs text-charcoal-muted">
+                <Shirt className="w-7 h-7 mx-auto text-canvas-dark" />
+                <p>No garment selected. Drag a top onto the camera stage or click one from the panel.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Mandatory Consent Checkbox */}
+          <div
+            className={`p-4 rounded-2xl border transition-all ${
+              consentError
+                ? 'border-red-400 bg-red-50/70'
+                : 'border-canvas-dark bg-white shadow-xs'
+            }`}
+          >
+            <label className="flex items-start space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={consentGiven}
+                onChange={(e) => {
+                  setConsentGiven(e.target.checked);
+                  if (e.target.checked) setConsentError(false);
+                }}
+                className="mt-1 h-4 w-4 rounded border-canvas-dark text-accent focus:ring-accent accent-accent cursor-pointer"
+              />
+              <div className="space-y-1 text-xs">
+                <span className="font-semibold text-charcoal block">
+                  Mandatory Processing Consent
+                </span>
+                <span className="text-charcoal-muted leading-relaxed block font-light">
+                  I confirm that I own this photograph or have explicit authorization to process it. I consent to private 2D diffusion image synthesis for virtual clothing preview.
+                </span>
+              </div>
+            </label>
+            {consentError && (
+              <div className="mt-2 text-xs text-red-600 font-medium flex items-center space-x-1">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>You must accept the consent agreement before submitting a try-on request.</span>
               </div>
             )}
           </div>
 
           {/* Submit Action Well */}
-          <div className="bg-canvas-subtle rounded-2xl p-6 border border-canvas-dark/60 space-y-4">
+          <div className="bg-canvas-subtle rounded-2xl p-5 border border-canvas-dark/60 space-y-3">
             <div className="space-y-1">
               <h4 className="font-serif text-base font-medium text-charcoal">
-                Ready to Synthesize
+                Try This Look
               </h4>
               <p className="text-xs text-charcoal-muted font-light leading-relaxed">
-                Click below to start the asynchronous AI diffusion pipeline.
+                Runs asynchronous 2D AI try-on on your captured or uploaded image.
               </p>
             </div>
 
@@ -368,13 +420,13 @@ export const TryOnPage: React.FC = () => {
               onClick={handleSubmitTryOn}
               className="w-full shadow-md"
             >
-              <span>{currentUser ? 'Generate Virtual Try-On' : 'Sign In to Generate'}</span>
+              <span>{currentUser ? 'Try This Look' : 'Sign In to Try This Look'}</span>
               <Sparkles className="w-4 h-4 ml-2" />
             </Button>
 
             {!uploadedPersonFile && (
               <p className="text-[11px] text-center text-charcoal-light">
-                Please upload your photograph in Step 1 to enable generation.
+                Capture a camera frame or upload a photo to enable AI generation.
               </p>
             )}
           </div>
@@ -385,7 +437,7 @@ export const TryOnPage: React.FC = () => {
       <GarmentSelectorModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSelect={(garment) => setSelectedGarment(garment)}
+        onSelect={(garment) => handleSelectOrDropGarment(garment, false)}
       />
     </div>
   );

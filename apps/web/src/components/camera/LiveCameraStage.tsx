@@ -149,3 +149,4 @@ export const LiveCameraStage: React.FC<LiveCameraStageProps> = ({
     </div>
   );
 };
+

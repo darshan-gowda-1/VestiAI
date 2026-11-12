@@ -160,3 +160,4 @@ describe('VestiAI 2.0 Live Camera Stream & Stage', () => {
     expect(capturedFile.type).toBe('image/jpeg');
   });
 });
+
