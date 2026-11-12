@@ -1,9 +1,16 @@
 # VestiAI — Project Scope & System Specification
 
-## 1. Project Objective
-VestiAI is an AI-powered 2D virtual clothing try-on web application designed for fashion e-commerce. Its primary objective is to allow shoppers to upload a photograph of themselves, select a catalog garment (starting with tops), and obtain an AI-generated photorealistic visualization of how the chosen garment looks on them. 
+## 1. Project Objective (VestiAI 2.0)
+VestiAI is an AI-powered live virtual fashion try-on platform consisting of three connected products under the VestiAI brand:
+1. **VestiAI Main Website (`/`, `/try-on`):** Live browser camera experience with drag-and-drop garment selection, photo upload fallback, frame capture, and asynchronous 2D AI try-on generation with before/after comparison.
+2. **VestiAI Fashion Store (`/store`, `/product/:id`):** Searchable catalog with category/price filters, sorting, saved looks, wishlist, and external retailer attribution links.
+3. **VestiAI Chrome Extension (`apps/extension`, MV3):** Browser extension enabling users to select product images on supported external shopping websites and launch VestiAI try-on.
 
-VestiAI serves as a visual aid to assist shopping decisions. It does not claim or provide certified garment fit, exact tailoring measurements, or physical fabric simulation.
+### Two Try-On Modes & Honest Technical Boundaries
+- **Mode 1 — Camera Experience:** Displays the user's live `MediaDevices` webcam stream for positioning and drag-and-drop garment selection. This is a live preview and does **not** claim continuous real-time AI video garment rendering.
+- **Mode 2 — AI Virtual Try-On:** Captures a camera frame (or uses an uploaded photo) and executes the asynchronous 2D diffusion model (`IDM-VTON` / `CatVTON` / remote GPU worker) to produce a genuine AI result.
+- **Real-Time Video AI:** Investigated separately in an isolated research phase; never faked by stretching static garment PNGs over a webcam feed.
+- **Explicit Exclusions:** No 3D avatars, Blender/GLB/Three.js meshes, or certified tailoring/physical size-fit guarantees.
 
 ---
 

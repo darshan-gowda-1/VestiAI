@@ -181,3 +181,26 @@
 | **TASK-192..209** | Phase 14: Deployment & DevOps (Dockerfiles, `docker-compose.prod.yml`, Nginx SPA/API proxy, Render & Vercel configs, GitHub Actions CI, `DEPLOYMENT_GUIDE.md`) | Phase 14 | High | Completed | Phase 13 | Container, cloud, CI/CD, and deployment docs created and validated. |
 | **TASK-210..245** | Phases 15 through 16: College Academic Report, Presentation & Final Delivery (`architecture_and_er.md`, `VestiAI_Final_Project_Report.md`, `VestiAI_Presentation_Deck.md`, `DEMO_WALKTHROUGH.md`, final verification) | Phases 15-16 | High | Completed | Phase 14 | All academic report, diagram, presentation, and release deliverables completed and verified. |
 
+---
+
+## VestiAI 2.0 Upgrade Roadmap (Anywear-Inspired Platform)
+
+| Task ID | Task Title | Phase | Priority | Status | Dependencies | Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **V2-TASK-01..10** | Phase 1: Existing Project Audit, Feature Inventory, Reference Analysis, Refactor Plan, Scope Update & Roadmap | V2 Phase 1 | Critical | Completed | V1 Complete | Audited V1 repo; decided in-place refactor; created `vestiai_2_0_refactor_plan.md` and updated `scope.md`. |
+| **V2-TASK-11..15** | Phase 2: Design System & Brand Identity Upgrade | V2 Phase 2 | High | Scheduled | V2 Phase 1 | Fashion-tech visual identity, reusable UI & camera/loading/toast components. |
+| **V2-TASK-16..23** | Phase 3: Main Landing Page (`/`, `/how-it-works`, extension promo) | V2 Phase 3 | High | Scheduled | V2 Phase 2 | Hero "Try Any Look. Before You Buy.", 3-step demo, responsive verification. |
+| **V2-TASK-24..32** | Phase 4: Live Camera Try-On Interface (`/try-on`) | V2 Phase 4 | Critical | Scheduled | V2 Phase 2 | `MediaDevices` camera stream, front/rear switch, capture/retake, stream cleanup. |
+| **V2-TASK-33..43** | Phase 5: Drag-and-Drop Garment Experience | V2 Phase 5 | Critical | Scheduled | V2 Phase 4 | 3-column desktop / mobile carousel, pointer drag-and-drop + touch click-to-select. |
+| **V2-TASK-44..54** | Phase 6: Image-Based AI Try-On Integration | V2 Phase 6 | Critical | Scheduled | V2 Phase 4, 5 | Wire camera capture -> existing `TryOnPipelineService` + `model_version` tracking. |
+| **V2-TASK-55..61** | Phase 7: Result Experience (`/try-on/result/:jobId`) | V2 Phase 7 | High | Scheduled | V2 Phase 6 | Before/after slider, save look, retry, download, view product. |
+| **V2-TASK-62..74** | Phase 8: VestiAI Fashion Store (`/store`, `/product/:id`) | V2 Phase 8 | High | Scheduled | V2 Phase 2 | Price filters, sorting, retailer links, external attribution, try-on preload. |
+| **V2-TASK-75..84** | Phase 9: Saved Looks & User Accounts (`/saved-looks`, `/wishlist`, `/history`, `/profile`) | V2 Phase 9 | High | Scheduled | V2 Phase 7, 8 | Full user ownership, saved looks gallery, account/data deletion. |
+| **V2-TASK-85..105** | Phase 10: Chrome Extension (`apps/extension` MV3) | V2 Phase 10 | Medium | Scheduled | V2 Phase 6, 8, 11 | Popup/side-panel, content script image picker, cross-origin handling, extension API. |
+| **V2-TASK-106..116** | Phase 11: Backend & Database Updates (`Product` retailer fields, `/extension/*`, `/history`, `/categories`) | V2 Phase 11 | High | Scheduled | V2 Phase 1 | Alembic migration, schema updates, Swagger docs. |
+| **V2-TASK-117..123** | Phase 12: Real-Time Try-On Research & Isolated Prototype | V2 Phase 12 | Low | Scheduled | V2 Phase 6 | Benchmark latency, temporal stability, flicker, VRAM, and licenses. |
+| **V2-TASK-124..136** | Phase 13: Security & Privacy (Camera consent/shutdown, external URL validation, upload & rate limits) | V2 Phase 13 | Critical | Scheduled | V2 Phase 4, 10, 11 | Enforce strict camera & extension permission boundaries. |
+| **V2-TASK-137..151** | Phase 14: Testing & QA | V2 Phase 14 | High | Scheduled | V2 Phase 13 | Camera, drag-and-drop, store, extension, E2E, and QA report. |
+| **V2-TASK-152..163** | Phase 15: Deployment (Web, API, DB, R2, GPU Worker, Extension config) | V2 Phase 15 | High | Scheduled | V2 Phase 14 | Live production verification. |
+| **V2-TASK-164..176** | Phase 16: Final Documentation & Delivery | V2 Phase 16 | High | Scheduled | V2 Phase 15 | Updated README, diagrams, screenshots, demo script, final release. |
+
