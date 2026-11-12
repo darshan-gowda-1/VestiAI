@@ -201,6 +201,6 @@
 | **V2-TASK-117..123** | Phase 12: Real-Time Try-On Research & Isolated Prototype | V2 Phase 12 | Low | Completed | V2 Phase 6 | Isolated `realtime_prototype.py` flicker/FPS benchmark + `REALTIME_TRYON_RESEARCH.md` decision memo. |
 | **V2-TASK-124..136** | Phase 13: Security & Privacy (Camera consent/shutdown, external URL validation, upload & rate limits) | V2 Phase 13 | Critical | Completed | V2 Phase 4, 10, 11 | Explicit camera start/cleanup, `http/https` URL validation, consent gate, rate limits & privacy docs verified. |
 | **V2-TASK-137..151** | Phase 14: Testing & QA | V2 Phase 14 | High | Completed | V2 Phase 13 | Backend `50 passed`, Web `21 passed` + build, Extension `3 passed` + build, `test_report.md` updated, CI extended. |
-| **V2-TASK-152..163** | Phase 15: Deployment (Web, API, DB, R2, GPU Worker, Extension config) | V2 Phase 15 | High | Scheduled | V2 Phase 14 | Live production verification. |
-| **V2-TASK-164..176** | Phase 16: Final Documentation & Delivery | V2 Phase 16 | High | Scheduled | V2 Phase 15 | Updated README, diagrams, screenshots, demo script, final release. |
+| **V2-TASK-152..163** | Phase 15: Deployment (Web, API, DB, R2, GPU Worker, Extension config) | V2 Phase 15 | High | Ready / Configured | V2 Phase 14 | `render.yaml`, `vercel.json`, `docker-compose.prod.yml`, `DEPLOYMENT_GUIDE.md` ready for live cloud provisioning. |
+| **V2-TASK-164..176** | Phase 16: Final Documentation & Delivery (`README.md`, diagrams, reports, GitHub push) | V2 Phase 16 | High | Completed | V2 Phase 15 | Updated `README.md` for V2, verified all 3 test suites, and pushed to `origin/master`. |
 

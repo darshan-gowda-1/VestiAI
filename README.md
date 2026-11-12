@@ -1,31 +1,42 @@
-# VestiAI — AI-Powered Virtual Clothing Try-On for E-Commerce
+# VestiAI 2.0 — AI-Powered Live Virtual Fashion Try-On Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Frontend: React + Vite + TS](https://img.shields.io/badge/Frontend-React%20%7C%20TypeScript%20%7C%20Vite-blue)](apps/web)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](apps/api)
+[![Extension: Chrome MV3](https://img.shields.io/badge/Extension-Chrome%20Manifest%20V3-yellow.svg)](apps/extension)
 [![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%2016-336791.svg)](docker-compose.yml)
-[![AI: 2D Virtual Try-On](https://img.shields.io/badge/AI-2D%20Image%20Try--On-orange.svg)](docs/architecture/scope.md)
 
 ---
 
-## 1. Project Introduction
+## 1. Project Introduction (VestiAI 2.0)
 
-**VestiAI** is an AI-powered 2D virtual clothing try-on platform tailored for modern fashion e-commerce. Online fashion shoppers frequently struggle to visualize how garments depicted in flat product photos or mannequin displays will appear when worn on their own body. VestiAI bridges this gap by enabling users to upload a front-facing photograph of themselves, select upper-body apparel from an interactive catalog (starting with T-shirts, shirts, sweatshirts, and blouses), and generate a realistic visual preview using state-of-the-art 2D diffusion technology.
+**VestiAI 2.0** is an interactive, consent-first virtual fashion try-on platform combining three connected components under the VestiAI brand:
 
-> **Academic & Scope Notice:**  
-> VestiAI is engineered as an honest, photorealistic 2D image-to-image visual preview system.  
-> **Explicit Exclusions:** 3D avatars, 3D clothing meshes, Blender workflows, GLB/GLTF assets, Three.js, physical cloth simulation, and tailoring/size guarantee claims are **strictly out of scope** for this release.
+1. **VestiAI Live Try-On Website (`apps/web`, `/try-on`):** Live browser webcam experience (`MediaDevices`) with front/rear camera switching, drag-and-drop garment selection, photo upload fallback, frame capture, and asynchronous 2D AI try-on with before/after comparison.
+2. **VestiAI Fashion Store (`apps/web`, `/store`, `/product/:id`):** Searchable upper-body catalog (`t-shirt`, `shirt`, `sweatshirt`, `blouse`) with category & price filters, sorting, wishlist, saved looks, and external retailer attribution links.
+3. **VestiAI Chrome Extension (`apps/extension`, Manifest V3):** Minimal-permission popup + side-panel extension allowing users to pick garment images on supported shopping sites and launch VestiAI 2D try-on.
+
+> **Honest Two-Mode Architecture & Scope Notice:**  
+> - **Mode 1 — Camera Experience:** Live browser webcam framing + drag-and-drop garment selection (does **not** claim continuous real-time AI video rendering).  
+> - **Mode 2 — AI Virtual Try-On:** Captures a frame (or uses an uploaded photo) and runs the asynchronous 2D diffusion model (`IDM-VTON` / `CatVTON` / remote Colab GPU / deterministic test stub).  
+> - **Explicit Exclusions:** 3D avatars, Blender/GLB/Three.js meshes, and certified physical sizing guarantees are **out of scope**. Real-time video try-on feasibility is documented separately in [REALTIME_TRYON_RESEARCH.md](docs/ai/REALTIME_TRYON_RESEARCH.md).
 
 ---
 
 ## 2. Key Features
 
-- **Fashion-Tech Catalog Experience:** Responsive catalog browsing with categories (Tops: T-shirts, shirts, sweatshirts, blouses), instant keyword search, and filters.
-- **Consent-First Upload Flow:** Secure upper-body photo uploader with client-side guidance, instant client-side preview, file validation, and mandatory image processing consent.
-- **Asynchronous AI Processing:** Non-blocking job submission (`queued` → `processing` → `completed` / `failed`) powered by an asynchronous background task queue.
-- **Interactive Before / After Comparison:** Split slider allowing shoppers to inspect garment transfer, drape, and blending directly against their original photograph.
-- **User History & Saved Looks:** Private saved results, history, and wishlist management with full user data deletion rights.
-- **Catalog Administration:** Protected administrative workspace for catalog updates and background job monitoring.
+- **Live Camera + Drag-and-Drop Workspace (`/try-on`):** 3-column desktop / mobile-carousel layout with explicit user-initiated camera permission, automatic stream cleanup, drag-and-drop garment selection, and click-to-select fallback.
+- **VestiAI Fashion Store (`/store`):** Category tabs, keyword search, price range filters, sorting, wishlist, and safe external retailer links.
+- **Interactive Result Experience (`/try-on/result/:jobId`):** Draggable before/after comparison slider, Save Look, Download Result, Retake Photo, View Product, model version metadata, and failed-job retry.
+- **Chrome Extension (`apps/extension`):** On-demand `activeTab` + `scripting` product image extractor, CORS-aware handling, side-panel consent & try-on submission, and saved looks integration.
+- **Privacy & Security by Design:** Mandatory image-processing consent, private storage with HMAC-signed URLs, EXIF stripping, rate limiting, and full user data deletion.
+
+### Additional Documentation
+- [Deployment & Operations Guide](docs/deployment/DEPLOYMENT_GUIDE.md)
+- [Chrome Extension Install & Privacy Guide](docs/extension/EXTENSION_GUIDE.md)
+- [Architecture, ER & Data Flow Diagrams](docs/diagrams/architecture_and_er.md)
+- [Real-Time Try-On Research Memo](docs/ai/REALTIME_TRYON_RESEARCH.md)
+- [Final Academic Project Report](docs/reports/VestiAI_Final_Project_Report.md)
 
 ---
 
