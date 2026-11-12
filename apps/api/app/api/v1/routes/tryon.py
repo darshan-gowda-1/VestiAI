@@ -95,6 +95,39 @@ async def cancel_tryon_job(
     return await TryOnService.cancel_job(db, job_id, current_user)
 
 
+@router.post("/jobs/{job_id}/retry", response_model=TryOnJobCreateResponse, status_code=status.HTTP_202_ACCEPTED)
+async def retry_tryon_job(
+    job_id: uuid.UUID,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> TryOnJobCreateResponse:
+    """Re-queue a failed or cancelled try-on job owned by the current user."""
+    from app.api.deps import ensure_owner_or_admin
+    from app.core.exceptions import ConflictError, NotFoundError
+    from app.repositories.job_repository import JobRepository
+    from app.workers.queue import job_queue
+
+    job = await JobRepository.get_by_id(db, job_id)
+    if job is None:
+        raise NotFoundError("Try-on job not found.")
+    ensure_owner_or_admin(job.user_id, current_user)
+    if job.status not in ("failed", "cancelled"):
+        raise ConflictError(
+            f"Only failed or cancelled jobs can be retried (current status: {job.status})."
+        )
+    job.status = "queued"
+    job.error_code = None
+    job.error_message = None
+    job.started_at = None
+    job.completed_at = None
+    await db.commit()
+    job_queue.enqueue(str(job.id))
+    if settings.WORKER_AUTO_DISPATCH:
+        background_tasks.add_task(process_single_job, job.id)
+    return TryOnJobCreateResponse(job_id=job.id, status="queued")
+
+
 @router.delete("/jobs/{job_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_tryon_job(
     job_id: uuid.UUID,

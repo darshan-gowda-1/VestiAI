@@ -1,7 +1,7 @@
 from typing import List
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,10 +13,22 @@ from app.models.saved_look import SavedLook
 from app.models.user import User
 from app.models.wishlist_item import WishlistItem
 from app.repositories.job_repository import JobRepository
-from app.schemas.tryon import SavedLookResponse, WishlistItemResponse
+from app.schemas.tryon import SavedLookResponse, TryOnJobListResponse, WishlistItemResponse
 from app.services.catalog_service import CatalogService
+from app.services.tryon_service import TryOnService
 
 router = APIRouter(tags=["Collections"])
+
+
+@router.get("/history", response_model=TryOnJobListResponse)
+async def list_tryon_history(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> TryOnJobListResponse:
+    """List authenticated user's try-on history."""
+    return await TryOnService.list_jobs(db, current_user, page=page, limit=limit)
 
 
 class SaveLookRequest(BaseModel):
