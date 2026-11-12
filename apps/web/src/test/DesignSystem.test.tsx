@@ -77,3 +77,4 @@ describe('VestiAI 2.0 Design System Components', () => {
     expect(onUpload).toHaveBeenCalledTimes(1);
   });
 });
+

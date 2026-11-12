@@ -189,7 +189,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **V2-TASK-01..10** | Phase 1: Existing Project Audit, Feature Inventory, Reference Analysis, Refactor Plan, Scope Update & Roadmap | V2 Phase 1 | Critical | Completed | V1 Complete | Audited V1 repo; decided in-place refactor; created `vestiai_2_0_refactor_plan.md` and updated `scope.md`. |
 | **V2-TASK-11..15** | Phase 2: Design System & Brand Identity Upgrade (`BrandLogo`, `ToastProvider`, `LoadingSpinner`, `CameraPermissionCard`, V2 route aliases) | V2 Phase 2 | High | Completed | V2 Phase 1 | Reusable UI & camera permission components built and tested with Vitest. |
-| **V2-TASK-16..23** | Phase 3: Main Landing Page (`/`, `/how-it-works`, extension promo) | V2 Phase 3 | High | Scheduled | V2 Phase 2 | Hero "Try Any Look. Before You Buy.", 3-step demo, responsive verification. |
+| **V2-TASK-16..23** | Phase 3: Main Landing Page (`/`, `/how-it-works`, `/terms`, extension promo) | V2 Phase 3 | High | Completed | V2 Phase 2 | Hero "Try Any Look. Before You Buy.", 3-step How It Works, 4 feature pillars, Extension promo, Footer & TermsPage verified. |
 | **V2-TASK-24..32** | Phase 4: Live Camera Try-On Interface (`/try-on`) | V2 Phase 4 | Critical | Scheduled | V2 Phase 2 | `MediaDevices` camera stream, front/rear switch, capture/retake, stream cleanup. |
 | **V2-TASK-33..43** | Phase 5: Drag-and-Drop Garment Experience | V2 Phase 5 | Critical | Scheduled | V2 Phase 4 | 3-column desktop / mobile carousel, pointer drag-and-drop + touch click-to-select. |
 | **V2-TASK-44..54** | Phase 6: Image-Based AI Try-On Integration | V2 Phase 6 | Critical | Scheduled | V2 Phase 4, 5 | Wire camera capture -> existing `TryOnPipelineService` + `model_version` tracking. |

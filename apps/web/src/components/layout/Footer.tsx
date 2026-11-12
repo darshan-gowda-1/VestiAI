@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Info, Sparkles } from 'lucide-react';
+import { BrandLogo } from '../common/BrandLogo';
 
 export const Footer: React.FC = () => {
   return (
@@ -9,82 +10,82 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-canvas-dark/60">
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-charcoal flex items-center justify-center text-canvas font-serif font-bold text-base shadow-sm">
-                V
-              </div>
-              <span className="font-serif text-xl font-bold tracking-tight text-charcoal">
-                Vesti<span className="text-accent">AI</span>
-              </span>
-            </div>
+            <Link to="/" className="inline-block">
+              <BrandLogo size="sm" />
+            </Link>
             <p className="text-xs text-charcoal-light leading-relaxed">
-              AI-Powered 2D Virtual Clothing Try-On for Fashion E-Commerce. Bridging product photography and authentic human self-visualization.
+              VestiAI — AI-Powered Live Virtual Fashion Try-On Platform. Bridging online clothing discovery and honest 2D self-visualization.
             </p>
             <div className="flex items-center space-x-2 text-xs text-emerald-700 font-medium">
               <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Consent-Based & Private Storage</span>
+              <span>Consent-Based &amp; Private Storage</span>
             </div>
           </div>
 
-          {/* Catalog Links */}
+          {/* Store & Categories */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal font-sans">
-              Upper-Body Catalog
+              Fashion Store
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/catalog?category=t-shirt" className="hover:text-charcoal transition-colors">
-                  T-Shirts & Boxy Tees
+                <Link to="/store?category=t-shirt" className="hover:text-charcoal transition-colors">
+                  T-Shirts &amp; Boxy Tees
                 </Link>
               </li>
               <li>
-                <Link to="/catalog?category=shirt" className="hover:text-charcoal transition-colors">
-                  Oxford & Linen Shirts
+                <Link to="/store?category=shirt" className="hover:text-charcoal transition-colors">
+                  Oxford &amp; Linen Shirts
                 </Link>
               </li>
               <li>
-                <Link to="/catalog?category=sweatshirt" className="hover:text-charcoal transition-colors">
-                  Fleece Sweaters & Hoodies
+                <Link to="/store?category=sweatshirt" className="hover:text-charcoal transition-colors">
+                  Fleece Sweaters &amp; Hoodies
                 </Link>
               </li>
               <li>
-                <Link to="/catalog?category=blouse" className="hover:text-charcoal transition-colors">
-                  Silk & Evening Blouses
+                <Link to="/store?category=blouse" className="hover:text-charcoal transition-colors">
+                  Silk &amp; Evening Blouses
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Platform Links */}
+          {/* Platform & Support Links */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal font-sans">
-              Experience
+              Platform &amp; Help
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/tryon" className="hover:text-charcoal transition-colors flex items-center space-x-1">
-                  <span>Try-On Studio</span>
+                <Link to="/try-on" className="hover:text-charcoal transition-colors flex items-center space-x-1">
+                  <span>Live Try-On Studio</span>
                   <Sparkles className="w-3 h-3 text-accent" />
                 </Link>
               </li>
               <li>
-                <Link to="/history" className="hover:text-charcoal transition-colors">
-                  My Try-On History
+                <Link to="/#how-it-works" className="hover:text-charcoal transition-colors">
+                  How It Works &amp; Help
                 </Link>
               </li>
               <li>
-                <Link to="/wishlist" className="hover:text-charcoal transition-colors">
-                  Saved Wishlist
+                <Link to="/#extension" className="hover:text-charcoal transition-colors">
+                  Chrome Extension
                 </Link>
               </li>
               <li>
-                <Link to="/profile" className="hover:text-charcoal transition-colors">
-                  Data Controls & Erasure
+                <Link to="/saved-looks" className="hover:text-charcoal transition-colors">
+                  Saved Looks &amp; History
                 </Link>
               </li>
               <li>
                 <Link to="/privacy" className="hover:text-charcoal transition-colors">
-                  Privacy & Responsible AI
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="hover:text-charcoal transition-colors">
+                  Terms &amp; Contact
                 </Link>
               </li>
             </ul>
@@ -93,31 +94,25 @@ export const Footer: React.FC = () => {
           {/* Academic Notice & Scope */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal font-sans">
-              Academic & Scope Notice
+              About &amp; Scope Notice
             </h4>
             <div className="p-3 rounded-xl bg-canvas-subtle border border-canvas-dark/60 text-xs text-charcoal-muted space-y-1.5">
               <div className="flex items-center space-x-1.5 font-medium text-charcoal">
                 <Info className="w-3.5 h-3.5 text-accent" />
-                <span>Strict 2D Scope Boundary</span>
+                <span>2D Visual Preview Only</span>
               </div>
               <p className="text-[11px] leading-relaxed text-charcoal-light">
-                This project focuses strictly on 2D image-to-image conditional diffusion. 3D avatars, 3D clothing meshes, and sizing guarantees are excluded by specification.
+                Camera mode provides live framing; AI try-on generates 2D previews. No 3D avatars or guaranteed physical sizing claims.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-charcoal-light">
-          <p>© 2026 VestiAI Project. Academic College Mini-Project. Released under MIT License.</p>
-          <div className="flex items-center space-x-6">
-            <span>FastAPI Backend</span>
-            <span>React & Vite</span>
-            <span>2D Diffusion Pipeline</span>
-          </div>
+          <p>© {new Date().getFullYear()} VestiAI. Built for Academic &amp; Research Demonstration.</p>
+          <p>React 18 • FastAPI • PyTorch 2D Virtual Try-On</p>
         </div>
       </div>
     </footer>
   );
 };
-
