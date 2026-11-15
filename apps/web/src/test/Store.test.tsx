@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { CatalogPage } from '../pages/CatalogPage';
 import { ProductDetailPage } from '../pages/ProductDetailPage';
 import * as AppContextModule from '../context/AppContext';
+import * as CartContextModule from '../context/CartContext';
 import type { Product } from '../types';
 
 const STORE_PRODUCTS: Product[] = [
@@ -56,6 +57,21 @@ describe('VestiAI 2.0 Fashion Store (/store & /product/:id)', () => {
       toggleWishlist: vi.fn(),
       setSelectedGarment: vi.fn(),
     } as unknown as ReturnType<typeof AppContextModule.useApp>);
+
+    vi.spyOn(CartContextModule, 'useCart').mockReturnValue({
+      cart: null,
+      isLoading: false,
+      isCartDrawerOpen: false,
+      openCartDrawer: vi.fn(),
+      closeCartDrawer: vi.fn(),
+      addToCart: vi.fn(),
+      updateQuantity: vi.fn(),
+      removeFromCart: vi.fn(),
+      clearCart: vi.fn(),
+      checkout: vi.fn(),
+      orders: [],
+      fetchOrders: vi.fn(),
+    } as unknown as ReturnType<typeof CartContextModule.useCart>);
   });
 
   it('supports search, price range filtering, and sorting in Store', () => {

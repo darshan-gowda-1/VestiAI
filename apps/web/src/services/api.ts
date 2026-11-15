@@ -436,3 +436,77 @@ export const collectionsApi = {
   },
 };
 
+export const cartApi = {
+  async getCart(): Promise<any> {
+    const { data } = await apiClient.get('/cart');
+    return data;
+  },
+
+  async addItem(productId: string, quantity = 1, selectedSize = 'M'): Promise<any> {
+    const { data } = await apiClient.post('/cart/items', {
+      product_id: productId,
+      quantity,
+      selected_size: selectedSize,
+    });
+    return data;
+  },
+
+  async updateItem(itemId: string, quantity: number, selectedSize?: string): Promise<any> {
+    const { data } = await apiClient.put(`/cart/items/${itemId}`, {
+      quantity,
+      selected_size: selectedSize,
+    });
+    return data;
+  },
+
+  async removeItem(itemId: string): Promise<any> {
+    const { data } = await apiClient.delete(`/cart/items/${itemId}`);
+    return data;
+  },
+
+  async clearCart(): Promise<void> {
+    await apiClient.delete('/cart');
+  },
+};
+
+export const ordersApi = {
+  async checkout(shippingAddress = '123 Fashion Blvd', paymentMethod = 'card_test'): Promise<any> {
+    const { data } = await apiClient.post('/orders/checkout', {
+      shipping_address: shippingAddress,
+      payment_method: paymentMethod,
+    });
+    return data;
+  },
+
+  async listOrders(): Promise<any[]> {
+    const { data } = await apiClient.get<any[]>('/orders');
+    return data;
+  },
+
+  async getOrder(orderId: string): Promise<any> {
+    const { data } = await apiClient.get(`/orders/${orderId}`);
+    return data;
+  },
+};
+
+export const uploadsApi = {
+  async getPresignedUrl(filename: string, mimeType: string, fileSize: number): Promise<{ upload_url: string; storage_key: string }> {
+    const { data } = await apiClient.post('/uploads/presign', {
+      filename,
+      mime_type: mimeType,
+      file_size: fileSize,
+    });
+    return data;
+  },
+
+  async completeUpload(payload: { storage_key: string; filename?: string; mime_type?: string; file_size?: number }): Promise<any> {
+    const { data } = await apiClient.post('/uploads/complete', payload);
+    return data;
+  },
+
+  async listUserImages(): Promise<any[]> {
+    const { data } = await apiClient.get<any[]>('/uploads');
+    return data;
+  },
+};
+

@@ -3,12 +3,14 @@ from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Boolean, DateTime, Index, Numeric, String, Text, Uuid
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, Numeric, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, utc_now
 
 if TYPE_CHECKING:
+    from app.models.cart import CartItem
+    from app.models.category import Category
     from app.models.tryon_job import TryOnJob
     from app.models.wishlist_item import WishlistItem
 
@@ -26,9 +28,15 @@ class Product(Base):
     brand: Mapped[str] = mapped_column(String(100), nullable=False, default="Atelier Vesti")
     description: Mapped[str] = mapped_column(Text, nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
+    category_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     color: Mapped[str] = mapped_column(String(80), nullable=False)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    discount_price: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
     currency: Mapped[str] = mapped_column(String(10), nullable=False, default="USD")
+    available_sizes: Mapped[str] = mapped_column(String(100), nullable=False, default="XS,S,M,L,XL")
+    inventory: Mapped[int] = mapped_column(Integer, nullable=False, default=50)
     material: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)
     fit: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     image_key: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -43,8 +51,11 @@ class Product(Base):
     )
 
     # Relationships
+    category_rel: Mapped[Optional["Category"]] = relationship(back_populates="products")
     tryon_jobs: Mapped[List["TryOnJob"]] = relationship(back_populates="product")
     wishlist_items: Mapped[List["WishlistItem"]] = relationship(
         back_populates="product", cascade="all, delete-orphan"
     )
-
+    cart_items: Mapped[List["CartItem"]] = relationship(
+        back_populates="product", cascade="all, delete-orphan"
+    )

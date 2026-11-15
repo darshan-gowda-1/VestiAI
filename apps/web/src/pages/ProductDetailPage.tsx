@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useCart } from '../context/CartContext';
 import { ApiError, catalogApi, mapProductDto } from '../services/api';
 import { Product } from '../types';
-import { Sparkles, Heart, ArrowLeft, ShieldCheck, Info, Check, ExternalLink } from 'lucide-react';
+import { Sparkles, Heart, ArrowLeft, ShieldCheck, Info, Check, ExternalLink, ShoppingBag } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
@@ -12,12 +13,15 @@ import { ProductCard } from '../components/catalog/ProductCard';
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { products, wishlist, toggleWishlist, setSelectedGarment } = useApp();
+  const { addToCart, isLoading: isCartLoading } = useCart();
   const navigate = useNavigate();
 
   const cachedProduct = products.find((p) => p.id === id) || null;
   const [fetchedProduct, setFetchedProduct] = useState<Product | null>(cachedProduct);
   const [isLoading, setIsLoading] = useState<boolean>(!cachedProduct);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string>('M');
+  const [addedNotice, setAddedNotice] = useState<boolean>(false);
 
   useEffect(() => {
     if (cachedProduct) {
@@ -186,7 +190,30 @@ export const ProductDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Primary Try-On Action Well */}
+          {/* Size Selector */}
+          <div className="space-y-2 pt-2">
+            <div className="flex justify-between items-center text-xs">
+              <span className="uppercase font-semibold tracking-wider text-charcoal">Select Size</span>
+              <span className="text-charcoal-light">In Stock • Ships in 24h</span>
+            </div>
+            <div className="flex gap-2">
+              {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`w-11 h-10 rounded-lg text-xs font-mono font-medium border transition-all ${
+                    selectedSize === size
+                      ? 'border-charcoal bg-charcoal text-canvas shadow-sm'
+                      : 'border-canvas-dark bg-white text-charcoal hover:border-charcoal'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Primary Try-On & E-Commerce Action Well */}
           <div className="bg-canvas-subtle rounded-2xl p-6 border border-canvas-dark/60 space-y-4">
             <div className="space-y-1">
               <h3 className="font-serif text-lg font-medium text-charcoal flex items-center space-x-2">
@@ -198,15 +225,30 @@ export const ProductDetailPage: React.FC = () => {
               </p>
             </div>
 
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handleStartTryOn}
-              className="w-full shadow-md"
-            >
-              <span>Try This On in Studio</span>
-              <Sparkles className="w-4 h-4 ml-2 text-accent" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleStartTryOn}
+                className="flex-1 shadow-md"
+              >
+                <span>Try This On in Studio</span>
+                <Sparkles className="w-4 h-4 ml-2 text-accent" />
+              </Button>
+
+              <button
+                onClick={async () => {
+                  await addToCart(product.id, 1, selectedSize);
+                  setAddedNotice(true);
+                  setTimeout(() => setAddedNotice(false), 3000);
+                }}
+                disabled={isCartLoading}
+                className="px-6 py-3.5 rounded-full border border-charcoal text-charcoal hover:bg-charcoal hover:text-canvas transition text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span>{addedNotice ? 'Added to Bag!' : 'Add to Bag'}</span>
+              </button>
+            </div>
 
             {safeRetailerUrl && (
               <a

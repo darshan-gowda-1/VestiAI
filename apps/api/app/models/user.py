@@ -8,11 +8,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base, utc_now
 
 if TYPE_CHECKING:
-    from app.models.tryon_job import TryOnJob
-    from app.models.saved_look import SavedLook
-    from app.models.wishlist_item import WishlistItem
-    from app.models.consent_record import ConsentRecord
     from app.models.admin_audit_log import AdminAuditLog
+    from app.models.cart import Cart
+    from app.models.consent_record import ConsentRecord
+    from app.models.order import Order
+    from app.models.saved_look import SavedLook
+    from app.models.tryon_job import TryOnJob
+    from app.models.user_image import UserImage
+    from app.models.wishlist_item import WishlistItem
 
 
 class User(Base):
@@ -38,6 +41,14 @@ class User(Base):
     wishlist_items: Mapped[List["WishlistItem"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    cart: Mapped[Optional["Cart"]] = relationship(
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+    orders: Mapped[List["Order"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    uploaded_images: Mapped[List["UserImage"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
     consent_records: Mapped[List["ConsentRecord"]] = relationship(back_populates="user")
     audit_logs: Mapped[List["AdminAuditLog"]] = relationship(back_populates="admin")
-

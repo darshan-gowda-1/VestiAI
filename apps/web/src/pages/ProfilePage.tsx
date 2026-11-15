@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useCart } from '../context/CartContext';
 import { ApiError } from '../services/api';
-import { ShieldCheck, Trash2, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Trash2, CheckCircle2, Package } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Dialog } from '../components/ui/dialog';
@@ -9,11 +10,16 @@ import { Input } from '../components/ui/input';
 
 export const ProfilePage: React.FC = () => {
   const { currentUser, updateUserConsent, updateProfileName, deleteAllJobs } = useApp();
+  const { orders, fetchOrders } = useCart();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletedSuccess, setDeletedSuccess] = useState(false);
   const [fullName, setFullName] = useState(currentUser?.name || '');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileStatus, setProfileStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,6 +132,63 @@ export const ProfilePage: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Orders History Card */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-canvas-dark shadow-sm space-y-6">
+        <div className="flex items-center justify-between border-b border-canvas-dark pb-4">
+          <div className="flex items-center space-x-2">
+            <Package className="w-5 h-5 text-accent" />
+            <h3 className="font-serif text-lg font-medium text-charcoal">Order History & Receipts</h3>
+          </div>
+          <span className="text-xs text-charcoal-light font-mono">{orders.length} order(s) placed</span>
+        </div>
+
+        {orders.length === 0 ? (
+          <p className="text-xs text-charcoal-muted font-light py-4 text-center">
+            No purchase orders found on your account. Items purchased through the shopping bag will appear here.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((ord) => (
+              <div key={ord.id} className="p-4 rounded-xl border border-canvas-dark/80 bg-canvas-subtle/50 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div>
+                    <span className="font-semibold text-charcoal">Order #{ord.id.slice(0, 8)}</span>
+                    <span className="text-charcoal-light ml-2">{new Date(ord.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">
+                      {ord.orderStatus}
+                    </span>
+                    <span className="font-mono font-bold text-charcoal">${ord.totalAmount.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="divide-y divide-canvas-dark/40 pt-1">
+                  {ord.items.map((item) => (
+                    <div key={item.id} className="py-2 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.productImageUrl || '/placeholder.png'}
+                          alt={item.productTitle}
+                          className="w-10 h-12 object-cover rounded bg-canvas-subtle border border-canvas-dark"
+                        />
+                        <div>
+                          <p className="font-medium text-charcoal">{item.productTitle}</p>
+                          <p className="text-[11px] text-charcoal-light">
+                            Size: {item.selectedSize} × {item.quantity}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="font-mono text-charcoal font-medium">${item.totalPrice.toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Data Subject Rights & Permanent Deletion Card */}

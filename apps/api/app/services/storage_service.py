@@ -51,6 +51,15 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
+    def generate_presigned_upload_url(
+        self,
+        key: str,
+        content_type: str = "image/jpeg",
+        expires_in_seconds: int = 900,
+    ) -> str:
+        pass
+
+    @abstractmethod
     def cleanup_expired_objects(self, prefixes: List[str], retention_days: int) -> int:
         pass
 
@@ -112,6 +121,19 @@ class LocalStorageBackend(StorageBackend):
         sig = self._compute_signature(safe_key, expires, uid)
         query = urlencode({"key": safe_key, "expires": expires, "uid": uid, "sig": sig})
         return f"{settings.API_V1_STR}/media/signed?{query}"
+
+    def generate_presigned_upload_url(
+        self,
+        key: str,
+        content_type: str = "image/jpeg",
+        expires_in_seconds: int = 900,
+    ) -> str:
+        safe_key = sanitize_storage_key(key)
+        expires = int(time.time()) + max(1, expires_in_seconds)
+        uid = "upload"
+        sig = self._compute_signature(safe_key, expires, uid)
+        query = urlencode({"key": safe_key, "expires": expires, "uid": uid, "sig": sig, "content_type": content_type})
+        return f"{settings.API_V1_STR}/uploads/direct-upload?{query}"
 
     @classmethod
     def verify_signed_params(cls, key: str, expires: int, uid: str, sig: str) -> str:
@@ -198,6 +220,23 @@ class S3StorageBackend(StorageBackend):
         return self.client.generate_presigned_url(
             "get_object",
             Params={"Bucket": self.bucket, "Key": safe_key},
+            ExpiresIn=max(1, expires_in_seconds),
+        )
+
+    def generate_presigned_upload_url(
+        self,
+        key: str,
+        content_type: str = "image/jpeg",
+        expires_in_seconds: int = 900,
+    ) -> str:
+        safe_key = sanitize_storage_key(key)
+        return self.client.generate_presigned_url(
+            "put_object",
+            Params={
+                "Bucket": self.bucket,
+                "Key": safe_key,
+                "ContentType": content_type,
+            },
             ExpiresIn=max(1, expires_in_seconds),
         )
 

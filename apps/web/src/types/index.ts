@@ -148,3 +148,43 @@ export interface ApiWishlistItemDto {
   product_id: string;
   created_at: string;
 }
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  productTitle: string;
+  productImageUrl: string;
+  price: number;
+  quantity: number;
+  selectedSize: string;
+  itemTotal: number;
+}
+
+export interface Cart {
+  id: string;
+  items: CartItem[];
+  subtotal: number;
+  itemCount: number;
+}
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  productTitle: string;
+  productImageUrl: string;
+  quantity: number;
+  selectedSize: string;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+export interface Order {
+  id: string;
+  totalAmount: number;
+  currency: string;
+  orderStatus: string;
+  paymentStatus: string;
+  shippingAddress: string;
+  createdAt: string;
+  items: OrderItem[];
+}

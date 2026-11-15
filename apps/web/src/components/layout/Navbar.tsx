@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { ArrowRight, Heart, User, Menu, X, Shield, Sparkles, AlertCircle } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
+import { ArrowRight, Heart, User, Menu, X, Shield, Sparkles, AlertCircle, ShoppingBag } from 'lucide-react';
 import { BrandLogo } from '../common/BrandLogo';
 
 export const Navbar: React.FC = () => {
   const { wishlist, currentUser, logout, sessionExpiredMessage, clearSessionExpiredMessage } = useApp();
+  const { cart, openCartDrawer } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   const navLinks = [
     { label: 'Try On', href: '/try-on' },
     { label: 'Explore Styles', href: '/store' },
-    { label: 'How It Works', href: '/#how-it-works' },
+    { label: 'Cart', href: '/cart', badge: cart && cart.itemCount > 0 ? cart.itemCount : undefined },
     { label: 'Wishlist', href: '/wishlist', badge: wishlist.length > 0 ? wishlist.length : undefined },
     { label: 'History', href: '/history' },
   ];
@@ -75,6 +77,20 @@ export const Navbar: React.FC = () => {
 
           {/* Right Action Area */}
           <div className="hidden sm:flex items-center space-x-3">
+            {/* Bag Button */}
+            <button
+              onClick={openCartDrawer}
+              className="p-2 text-charcoal hover:text-accent transition relative flex items-center justify-center rounded-full hover:bg-canvas-subtle"
+              aria-label="Open Shopping Bag"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {cart && cart.itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  {cart.itemCount}
+                </span>
+              )}
+            </button>
+
             {currentUser ? (
               <div className="flex items-center space-x-2">
                 <Link
