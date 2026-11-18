@@ -48,6 +48,11 @@ wheels/
 htmlcov/
 .tox/
 .nox/
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
 coverage.xml
 *.cover
 
