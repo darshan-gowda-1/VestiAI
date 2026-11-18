@@ -51,7 +51,7 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
-    SYNC_DATABASE_URL: str = "postgresql://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
+    SYNC_DATABASE_URL: str = "postgresql+psycopg2://vestiai_user:vestiai_password@localhost:5432/vestiai_db"
     DB_ECHO: bool = False
 
     @field_validator("DATABASE_URL", mode="before")
@@ -60,7 +60,7 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             if v.startswith("postgres://"):
                 return v.replace("postgres://", "postgresql+asyncpg://", 1)
-            if v.startswith("postgresql://"):
+            if v.startswith("postgresql://") and not v.startswith("postgresql+"):
                 return v.replace("postgresql://", "postgresql+asyncpg://", 1)
         return v
 
@@ -69,9 +69,11 @@ class Settings(BaseSettings):
     def normalize_sync_database_url(cls, v: str) -> str:
         if isinstance(v, str):
             if v.startswith("postgres://"):
-                return v.replace("postgres://", "postgresql://", 1)
+                return v.replace("postgres://", "postgresql+psycopg2://", 1)
             if v.startswith("postgresql+asyncpg://"):
-                return v.replace("postgresql+asyncpg://", "postgresql://", 1)
+                return v.replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1)
+            if v.startswith("postgresql://") and not v.startswith("postgresql+"):
+                return v.replace("postgresql://", "postgresql+psycopg2://", 1)
         return v
 
     # Redis Queue & Worker

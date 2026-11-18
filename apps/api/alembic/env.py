@@ -23,10 +23,18 @@ target_metadata = Base.metadata
 def get_sync_url() -> str:
     sync_url = os.getenv("SYNC_DATABASE_URL")
     if sync_url:
-        return sync_url.replace("postgres://", "postgresql://", 1).replace("postgresql+asyncpg://", "postgresql://", 1)
+        return (
+            sync_url.replace("postgres://", "postgresql+psycopg2://", 1)
+            .replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1)
+        )
     async_or_raw = os.getenv("DATABASE_URL", settings.DATABASE_URL)
     if async_or_raw and not async_or_raw.startswith("sqlite"):
-        return async_or_raw.replace("postgres://", "postgresql://", 1).replace("postgresql+asyncpg://", "postgresql://", 1)
+        cleaned = async_or_raw.replace("postgres://", "postgresql+psycopg2://", 1).replace(
+            "postgresql+asyncpg://", "postgresql+psycopg2://", 1
+        )
+        if cleaned.startswith("postgresql://") and not cleaned.startswith("postgresql+"):
+            cleaned = cleaned.replace("postgresql://", "postgresql+psycopg2://", 1)
+        return cleaned
     return settings.SYNC_DATABASE_URL
 
 
