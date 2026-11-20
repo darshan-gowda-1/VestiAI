@@ -1,4 +1,20 @@
-export type GarmentCategory = 't-shirt' | 'shirt' | 'sweatshirt' | 'blouse';
+export type GarmentCategory =
+  | 't-shirt'
+  | 'shirt'
+  | 'sweatshirt'
+  | 'blouse'
+  | 'dresses'
+  | 'tops'
+  | 'shirts'
+  | 't-shirts'
+  | 'jackets'
+  | 'jeans'
+  | 'trousers'
+  | 'skirts'
+  | 'sweaters'
+  | 'activewear'
+  | 'shoes'
+  | 'accessories';
 
 export interface Product {
   id: string;

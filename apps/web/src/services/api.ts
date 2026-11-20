@@ -65,11 +65,23 @@ export function resolveMediaUrl(keyOrUrl?: string | null): string {
   return `${API_BASE_URL}/media/${keyOrUrl.replace(/^\/+/, '')}`;
 }
 
-const CATEGORY_LABELS: Record<GarmentCategory, string> = {
+const CATEGORY_LABELS: Record<string, string> = {
   't-shirt': 'T-Shirts',
+  't-shirts': 'T-Shirts',
   shirt: 'Shirts',
+  shirts: 'Shirts',
   sweatshirt: 'Sweatshirts',
+  sweaters: 'Sweaters',
   blouse: 'Blouses',
+  tops: 'Tops',
+  dresses: 'Dresses',
+  jackets: 'Jackets',
+  jeans: 'Jeans',
+  trousers: 'Trousers',
+  skirts: 'Skirts',
+  activewear: 'Activewear',
+  shoes: 'Shoes',
+  accessories: 'Accessories',
 };
 
 export function mapProductDto(dto: ApiProductDto): Product {

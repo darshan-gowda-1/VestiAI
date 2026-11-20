@@ -79,6 +79,16 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/business" className="hover:text-charcoal transition-colors">
+                  Business &amp; Store Integration
+                </Link>
+              </li>
+              <li>
+                <Link to="/extension" className="hover:text-charcoal transition-colors">
+                  Chrome Extension Guide
+                </Link>
+              </li>
+              <li>
                 <Link to="/privacy" className="hover:text-charcoal transition-colors">
                   Privacy Policy
                 </Link>
@@ -86,6 +96,11 @@ export const Footer: React.FC = () => {
               <li>
                 <Link to="/terms" className="hover:text-charcoal transition-colors">
                   Terms &amp; Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/acceptable-use" className="hover:text-charcoal transition-colors">
+                  Acceptable Use Policy
                 </Link>
               </li>
             </ul>

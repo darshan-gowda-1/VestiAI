@@ -8,13 +8,14 @@ import { Badge } from '../components/ui/badge';
 export const HistoryPage: React.FC = () => {
   const { jobsHistory, savedLookIds, deleteJob, deleteAllJobs, currentUser } = useApp();
   const location = useLocation();
+  const isSavedRoute = location.pathname === '/saved-looks' || location.pathname === '/saved';
   const [filterTab, setFilterTab] = useState<'all' | 'saved'>(
-    location.pathname === '/saved-looks' ? 'saved' : 'all'
+    isSavedRoute ? 'saved' : 'all'
   );
 
   useEffect(() => {
-    setFilterTab(location.pathname === '/saved-looks' ? 'saved' : 'all');
-  }, [location.pathname]);
+    setFilterTab(isSavedRoute ? 'saved' : 'all');
+  }, [isSavedRoute]);
 
   const displayedJobs =
     filterTab === 'saved'

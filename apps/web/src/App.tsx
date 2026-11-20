@@ -19,6 +19,10 @@ import { ProfilePage } from './pages/ProfilePage';
 import { AdminPage } from './pages/AdminPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
+import { BusinessPage } from './pages/BusinessPage';
+import { BusinessInstallPage } from './pages/BusinessInstallPage';
+import { ExtensionPage } from './pages/ExtensionPage';
+import { AcceptableUsePage } from './pages/AcceptableUsePage';
 
 export default function App() {
   return (
@@ -30,6 +34,8 @@ export default function App() {
             <Layout>
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/shop" element={<CatalogPage />} />
+                <Route path="/shop/:category" element={<CatalogPage />} />
                 <Route path="/store" element={<CatalogPage />} />
                 <Route path="/catalog" element={<CatalogPage />} />
                 <Route path="/product/:id" element={<ProductDetailPage />} />
@@ -39,9 +45,14 @@ export default function App() {
                 <Route path="/tryon" element={<TryOnPage />} />
                 <Route path="/try-on/result/:jobId" element={<ResultPage />} />
                 <Route path="/result/:jobId" element={<ResultPage />} />
+                <Route path="/saved" element={<HistoryPage />} />
                 <Route path="/saved-looks" element={<HistoryPage />} />
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/business" element={<BusinessPage />} />
+                <Route path="/business/install" element={<BusinessInstallPage />} />
+                <Route path="/extension" element={<ExtensionPage />} />
+                <Route path="/acceptable-use" element={<AcceptableUsePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />

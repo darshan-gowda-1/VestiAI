@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { GarmentCategory } from '../types';
 import { ProductCard } from '../components/catalog/ProductCard';
@@ -10,34 +10,58 @@ import { Skeleton } from '../components/ui/skeleton';
 export const CatalogPage: React.FC = () => {
   const { products, isCatalogLoading, catalogError, refreshCatalog } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { category: paramCategory } = useParams<{ category?: string }>();
+
+  const initialCat = (paramCategory as GarmentCategory) || (searchParams.get('category') as GarmentCategory) || 'all';
 
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<GarmentCategory | 'all'>(
-    (searchParams.get('category') as GarmentCategory) || 'all'
-  );
+  const [category, setCategory] = useState<GarmentCategory | 'all'>(initialCat);
   const [priceRange, setPriceRange] = useState<'all' | 'under-35' | '35-65' | 'over-65'>('all');
   const [sortBy, setSortBy] = useState<'featured' | 'newest' | 'price-asc' | 'price-desc' | 'title'>('featured');
 
-  // Sync category query param
+  // Sync category param / query
   useEffect(() => {
-    const cat = searchParams.get('category') as GarmentCategory | null;
-    if (cat) {
-      setCategory(cat);
+    if (paramCategory) {
+      setCategory(paramCategory as GarmentCategory);
+    } else {
+      const cat = searchParams.get('category') as GarmentCategory | null;
+      if (cat) {
+        setCategory(cat);
+      }
     }
-  }, [searchParams]);
+  }, [paramCategory, searchParams]);
 
-  const categories: { label: string; value: GarmentCategory | 'all' }[] = [
-    { label: 'All Tops', value: 'all' },
-    { label: 'T-Shirts', value: 't-shirt' },
+  const categories: { label: string; value: string }[] = [
+    { label: 'All Items', value: 'all' },
+    { label: 'Dresses', value: 'dresses' },
+    { label: 'Tops', value: 'tops' },
     { label: 'Shirts', value: 'shirt' },
-    { label: 'Sweatshirts', value: 'sweatshirt' },
-    { label: 'Blouses', value: 'blouse' },
+    { label: 'T-Shirts', value: 't-shirt' },
+    { label: 'Jackets', value: 'jackets' },
+    { label: 'Jeans', value: 'jeans' },
+    { label: 'Trousers', value: 'trousers' },
+    { label: 'Sweaters', value: 'sweaters' },
+    { label: 'Activewear', value: 'activewear' },
+    { label: 'Shoes', value: 'shoes' },
+    { label: 'Accessories', value: 'accessories' },
   ];
 
   const filteredProducts = useMemo(() => {
     return products
       .filter((p) => {
-        const matchesCategory = category === 'all' || p.category === category;
+        let matchesCategory = category === 'all';
+        if (!matchesCategory) {
+          if (category === 'tops') {
+            matchesCategory = ['tops', 't-shirt', 'shirt', 'sweatshirt', 'blouse'].includes(p.category);
+          } else if (category === 't-shirt' || category === 't-shirts') {
+            matchesCategory = p.category === 't-shirt' || p.category === 't-shirts';
+          } else if (category === 'shirt' || category === 'shirts') {
+            matchesCategory = p.category === 'shirt' || p.category === 'shirts';
+          } else {
+            matchesCategory = p.category === category;
+          }
+        }
+
         const matchesSearch =
           p.title.toLowerCase().includes(search.toLowerCase()) ||
           p.brand.toLowerCase().includes(search.toLowerCase()) ||
@@ -99,7 +123,7 @@ export const CatalogPage: React.FC = () => {
           {categories.map((cat) => (
             <button
               key={cat.value}
-              onClick={() => handleCategoryChange(cat.value)}
+              onClick={() => handleCategoryChange(cat.value as GarmentCategory | 'all')}
               className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${
                 category === cat.value
                   ? 'bg-charcoal text-canvas shadow-xs'

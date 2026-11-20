@@ -1,0 +1,185 @@
+// Prisma schema for VestiAI Anywear Virtual Try-On Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  MERCHANT
+}
+
+enum TryOnStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum SessionMode {
+  PHOTO
+  TURNAROUND
+  RUNWAY
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String?        @unique
+  hashedPassword String?
+  name          String?
+  avatarUrl     String?
+  role          Role           @default(USER)
+  consentGiven  Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relationships
+  sessions      TryOnSession[]
+  favourites    Favourite[]
+  stores        Store[]
+
+  @@index([email])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+
+  products    Product[]
+
+  @@index([slug])
+}
+
+model Product {
+  id             String         @id @default(uuid())
+  title          String
+  brand          String
+  categorySlug   String
+  color          String
+  price          Float
+  imageUrl       String
+  flatGarmentUrl String?
+  description    String?
+  material       String?
+  fit            String?
+  retailerUrl    String?
+  source         String?
+  isFeatured     Boolean        @default(false)
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  category       Category       @relation(fields: [categorySlug], references: [slug])
+  favourites     Favourite[]
+  tryOnSessions  TryOnSession[]
+  storeProducts  StoreProduct[]
+
+  @@index([categorySlug])
+  @@index([brand])
+}
+
+model Favourite {
+  id        String   @id @default(uuid())
+  userId    String?  // Nullable to support anonymous/guest user favourites
+  guestId   String?  // Cookie/session-scoped guest identifier
+  productId String
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([guestId])
+}
+
+model TryOnSession {
+  id              String       @id @default(uuid())
+  userId          String?      // Optional for guest/anonymous sessions
+  guestSessionId  String?      // Tracking token for guest try-on sessions
+  productId       String
+  status          TryOnStatus  @default(QUEUED)
+  mode            SessionMode  @default(PHOTO)
+  personImageUrl  String
+  resultImageUrl  String?
+  motionVideoUrl  String?
+  turnaroundUrls  String[]     @default([])
+  processingTimeMs Float?
+  errorCode       String?
+  errorMessage    String?
+  isDemoMode      Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  completedAt     DateTime?
+
+  user            User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  product         Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  events          TryOnEvent[]
+
+  @@index([userId, createdAt])
+  @@index([guestSessionId, createdAt])
+  @@index([status])
+}
+
+model TryOnEvent {
+  id        String       @id @default(uuid())
+  sessionId String
+  eventType String       // 'camera_start', 'garment_selected', 'motion_started', 'look_saved', 'add_to_bag'
+  metadata  Json?
+  timestamp DateTime     @default(now())
+
+  session   TryOnSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, eventType])
+}
+
+model Store {
+  id          String         @id @default(uuid())
+  ownerId     String?
+  domain      String         @unique
+  name        String
+  platform    String         @default("shopify") // shopify, woocommerce, custom, etc.
+  apiKey      String?        @unique
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  owner       User?          @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  products    StoreProduct[]
+  integration Integration?
+
+  @@index([domain])
+}
+
+model StoreProduct {
+  id             String   @id @default(uuid())
+  storeId        String
+  productId      String
+  externalRefId  String?
+  detectedAt     DateTime @default(now())
+
+  store          Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, productId])
+}
+
+model Integration {
+  id             String   @id @default(uuid())
+  storeId        String   @unique
+  snippetVersion String   @default("latest")
+  settings       Json     @default("{\"buttonColor\":\"#170404\",\"buttonText\":\"Try On\",\"position\":\"beside_add_to_cart\"}")
+  verifiedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  store          Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+}

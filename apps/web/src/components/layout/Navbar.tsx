@@ -14,6 +14,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { label: 'Try On', href: '/try-on' },
     { label: 'Explore Styles', href: '/store' },
+    { label: 'Business', href: '/business' },
     { label: 'Cart', href: '/cart', badge: cart && cart.itemCount > 0 ? cart.itemCount : undefined },
     { label: 'Wishlist', href: '/wishlist', badge: wishlist.length > 0 ? wishlist.length : undefined },
     { label: 'History', href: '/history' },
