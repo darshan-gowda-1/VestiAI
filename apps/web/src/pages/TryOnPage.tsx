@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useCart } from '../context/CartContext';
 import { ApiError } from '../services/api';
-import { ImageUploader } from '../components/tryon/ImageUploader';
-import { GuidanceCard } from '../components/tryon/GuidanceCard';
-import { GarmentSelectorModal } from '../components/tryon/GarmentSelectorModal';
-import { JobProgressView } from '../components/tryon/JobProgressView';
+import { STUDIO_MODELS, StudioModel, TryOnMode, LIGHTING_PRESETS } from '../data/studioModels';
+import { ModeSelector } from '../components/tryon/ModeSelector';
+import { ModelPresetDock } from '../components/tryon/ModelPresetDock';
+import { MotionStage } from '../components/tryon/MotionStage';
 import { GarmentSidebar } from '../components/tryon/GarmentSidebar';
-import { DropTargetStage } from '../components/tryon/DropTargetStage';
-import { LiveCameraStage } from '../components/camera/LiveCameraStage';
 import { useCameraStream } from '../hooks/useCameraStream';
 import { useToast } from '../components/ui/toast';
-import { Sparkles, RefreshCw, ShieldCheck, Shirt, AlertCircle, Lock, Camera, Upload, X } from 'lucide-react';
+import {
+  Sparkles,
+  ShoppingBag,
+  Heart,
+  Camera,
+  Upload,
+  AlertCircle,
+  Sun,
+  Sunrise,
+  Moon,
+  CloudSun,
+} from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Skeleton } from '../components/ui/skeleton';
 
 export const TryOnPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -22,7 +30,6 @@ export const TryOnPage: React.FC = () => {
 
   const {
     products,
-    isCatalogLoading,
     selectedGarment,
     setSelectedGarment,
     uploadedPersonImage,
@@ -30,51 +37,28 @@ export const TryOnPage: React.FC = () => {
     setUploadedPersonPhoto,
     consentGiven,
     setConsentGiven,
-    currentJob,
-    clearCurrentJob,
     startTryOnJob,
-    cancelTryOnJob,
     currentUser,
     wishlist,
     toggleWishlist,
   } = useApp();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [consentError, setConsentError] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [inputMode, setInputMode] = useState<'camera' | 'upload'>('camera');
-  const [hasClearedGarment, setHasClearedGarment] = useState(false);
-
+  const { addToCart, isLoading: isCartLoading } = useCart();
   const { showToast } = useToast();
   const camera = useCameraStream();
 
-  const handleCaptureFrame = async () => {
-    const captured = await camera.captureFrame();
-    if (captured) {
-      setUploadedPersonPhoto(captured.previewUrl, captured.file);
-      showToast({
-        title: 'Frame Captured',
-        description: 'Your camera snapshot is ready for 2D AI try-on.',
-        variant: 'success',
-      });
-    }
-  };
+  // Anywear Studio States
+  const [mode, setMode] = useState<TryOnMode>('photo');
+  const [modelSource, setModelSource] = useState<'roster' | 'custom'>('roster');
+  const [selectedModel, setSelectedModel] = useState<StudioModel>(STUDIO_MODELS[0]);
+  const [selectedPoseId, setSelectedPoseId] = useState<string>(STUDIO_MODELS[0].poses[0].id);
+  const [activeLighting, setActiveLighting] = useState<string>(LIGHTING_PRESETS[0].id);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [consentError, setConsentError] = useState<boolean>(false);
+  const [activeResultUrl, setActiveResultUrl] = useState<string | null>(null);
 
-  const handleRetake = () => {
-    setUploadedPersonPhoto(null, null);
-    if (camera.cameraState !== 'active') {
-      void camera.startCamera();
-    }
-  };
-
-  const handleSwitchMode = (mode: 'camera' | 'upload') => {
-    setInputMode(mode);
-    if (mode === 'upload' && camera.cameraState === 'active') {
-      camera.stopCamera('stopped');
-    }
-  };
-
+  // Sync selected product from URL query param if present
   useEffect(() => {
     const prodId = searchParams.get('productId');
     if (prodId && products.length > 0) {
@@ -83,362 +67,446 @@ export const TryOnPage: React.FC = () => {
     }
   }, [searchParams, products, setSelectedGarment]);
 
-  const activeGarment = selectedGarment ?? (hasClearedGarment ? null : products[0] || null);
+  // Current active garment (defaults to first catalog item if none explicitly chosen)
+  const activeGarment = selectedGarment || products[0] || null;
 
-  const handleSelectOrDropGarment = (product: typeof products[number], viaDrop = false) => {
-    setHasClearedGarment(false);
-    setSelectedGarment(product);
-    if (viaDrop) {
+  // Selected Pose Image from Roster
+  const currentPose =
+    selectedModel.poses.find((p) => p.id === selectedPoseId) || selectedModel.poses[0];
+
+  // Active Person Image to feed into the try-on synthesis
+  const activePersonImageUrl =
+    modelSource === 'custom' ? uploadedPersonImage : currentPose.imageUrl;
+
+  const handleCaptureFrame = async () => {
+    const captured = await camera.captureFrame();
+    if (captured) {
+      setUploadedPersonPhoto(captured.previewUrl, captured.file);
+      setModelSource('custom');
       showToast({
-        title: 'Garment Selected',
-        description: `${product.title} is ready for 2D AI try-on.`,
-        variant: 'info',
+        title: 'Camera Snapshot Ready',
+        description: 'Your photo is staged for virtual try-on synthesis.',
+        variant: 'success',
       });
     }
   };
 
-  const handleRemoveGarment = () => {
-    setHasClearedGarment(true);
-    setSelectedGarment(null);
-  };
-
-  const handleSubmitTryOn = async () => {
+  const handleRunTryOn = async () => {
+    if (!activeGarment) return;
     if (!currentUser) {
       navigate('/login');
       return;
     }
-    if (!uploadedPersonFile || !activeGarment) return;
 
-    if (!consentGiven) {
+    if (modelSource === 'custom' && !consentGiven) {
       setConsentError(true);
       return;
     }
+
     setConsentError(false);
     setSubmitError(null);
     setIsSubmitting(true);
 
     try {
-      const finishedJob = await startTryOnJob(activeGarment, uploadedPersonFile, 'upper_body');
-      if (finishedJob.status === 'completed') {
-        navigate(`/result/${finishedJob.id}`);
-      } else if (finishedJob.status === 'failed') {
-        setSubmitError(finishedJob.error || 'AI try-on worker failed. Please try another photo.');
+      // If using model roster, fetch its image as a blob
+      let fileToSubmit = uploadedPersonFile;
+      if (modelSource === 'roster' || !fileToSubmit) {
+        const resp = await fetch(currentPose.imageUrl);
+        const blob = await resp.blob();
+        fileToSubmit = new File([blob], `${selectedModel.id}-${selectedPoseId}.jpg`, {
+          type: 'image/jpeg',
+        });
+      }
+
+      const job = await startTryOnJob(activeGarment, fileToSubmit, 'upper_body');
+      if (job.status === 'completed' && job.resultImageUrl) {
+        setActiveResultUrl(job.resultImageUrl);
+        showToast({
+          title: 'Outfit Synthesized!',
+          description: `Generated realistic drape in ${mode} mode.`,
+          variant: 'success',
+        });
+      } else if (job.status === 'failed') {
+        setSubmitError(job.error || 'Diffusion synthesis failed. Please retry.');
       }
     } catch (err) {
-      setSubmitError(
-        err instanceof ApiError ? err.message : 'Unable to submit try-on request. Please retry.'
-      );
+      setSubmitError(err instanceof ApiError ? err.message : 'Processing error. Please retry.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCancelJob = async () => {
-    if (!currentJob) {
-      clearCurrentJob();
-      return;
-    }
-    try {
-      await cancelTryOnJob(currentJob.id);
-    } catch {
-      clearCurrentJob();
+  const renderLightingIcon = (id: string) => {
+    switch (id) {
+      case 'light-infinity':
+        return <Sun className="w-3.5 h-3.5" />;
+      case 'light-golden':
+        return <Sunrise className="w-3.5 h-3.5" />;
+      case 'light-moody':
+        return <Moon className="w-3.5 h-3.5" />;
+      default:
+        return <CloudSun className="w-3.5 h-3.5" />;
     }
   };
 
-  if (currentJob && (currentJob.status === 'queued' || currentJob.status === 'processing')) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <JobProgressView
-          job={currentJob}
-          onCancel={handleCancelJob}
-          onViewResult={() => navigate(`/result/${currentJob.id}`)}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10">
-      {/* Header */}
-      <div className="space-y-2 border-b border-canvas-dark/60 pb-6">
-        <div className="flex items-center space-x-2">
-          <Badge variant="accent" className="text-xs">
-            2D Try-On Studio
-          </Badge>
-          <span className="text-xs text-charcoal-light">•</span>
-          <span className="text-xs text-charcoal-muted">Upper-Body Tops</span>
-        </div>
-        <h1 className="font-serif text-3xl sm:text-4xl font-medium text-charcoal">
-          Virtual Fitting Studio
-        </h1>
-        <p className="text-sm text-charcoal-muted font-light max-w-2xl">
-          Pair your front-facing portrait with any upper-body garment from our catalog. Our diffusion model synthesizes realistic drape and contours.
-        </p>
-      </div>
-
-      {/* Authentication Notice if unauthenticated */}
-      {!currentUser && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-amber-900">
-          <div className="flex items-center space-x-2.5">
-            <Lock className="w-4 h-4 text-amber-700 shrink-0" />
-            <span>
-              <strong>Sign in required:</strong> Photographs are stored privately under your account so only you can access generated results.
+    <div className="min-h-screen bg-[#090A0F] text-stone-100 py-8 px-4 sm:px-6 lg:px-8">
+      {/* Studio Header & Mode Switcher */}
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 pb-8 border-b border-white/10">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-[10px] font-mono uppercase tracking-wider font-semibold">
+              Anywear Engine 2.0
             </span>
+            <span className="text-stone-500">•</span>
+            <span className="text-xs text-stone-400 font-mono">Neural Cloth Dynamics</span>
           </div>
-          <Link to="/login">
-            <Button variant="primary" size="sm" className="text-xs whitespace-nowrap">
-              Sign In / Register
-            </Button>
-          </Link>
-        </div>
-      )}
-
-      {submitError && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-          <span>{submitError}</span>
-        </div>
-      )}
-
-      {/* Main 3-Column Desktop / Stacked Mobile Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Garment Selection Sidebar (3 cols on desktop, carousel below camera on mobile) */}
-        <div className="lg:col-span-3 order-2 lg:order-1">
-          <GarmentSidebar
-            products={products}
-            selectedGarmentId={activeGarment?.id || null}
-            wishlistIds={wishlist}
-            onSelectGarment={(p) => handleSelectOrDropGarment(p, false)}
-            onToggleWishlist={(id) => void toggleWishlist(id)}
-          />
+          <h1 className="text-2xl sm:text-3xl font-serif text-white tracking-wide mt-1">
+            VestiAI Virtual Fitting Studio
+          </h1>
         </div>
 
-        {/* Center Column: Camera / Upload + Drop Target (5 cols on desktop, top on mobile) */}
-        <div className="lg:col-span-5 order-1 lg:order-2 space-y-5">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-serif text-xl font-medium text-charcoal flex items-center gap-2">
-                <span>Camera or Photo</span>
-                {uploadedPersonImage && (
-                  <span className="text-xs text-emerald-700 font-sans font-medium flex items-center space-x-1">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Ready</span>
-                  </span>
-                )}
-              </h2>
-
-              <div className="inline-flex rounded-xl border border-canvas-dark bg-canvas-subtle p-1">
-                <button
-                  type="button"
-                  onClick={() => handleSwitchMode('camera')}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
-                    inputMode === 'camera'
-                      ? 'bg-white text-charcoal shadow-sm'
-                      : 'text-charcoal-muted hover:text-charcoal'
-                  }`}
-                >
-                  <Camera className="w-3.5 h-3.5" />
-                  <span>Live Camera</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSwitchMode('upload')}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
-                    inputMode === 'upload'
-                      ? 'bg-white text-charcoal shadow-sm'
-                      : 'text-charcoal-muted hover:text-charcoal'
-                  }`}
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Upload Photo</span>
-                </button>
-              </div>
-            </div>
-
-            <DropTargetStage
-              products={products}
-              onGarmentDropped={(p) => handleSelectOrDropGarment(p, true)}
-            >
-              {inputMode === 'camera' ? (
-                <LiveCameraStage
-                  videoRef={camera.videoRef}
-                  cameraState={camera.cameraState}
-                  errorMessage={camera.errorMessage}
-                  facingMode={camera.facingMode}
-                  devices={camera.devices}
-                  selectedDeviceId={camera.selectedDeviceId}
-                  capturedPreviewUrl={uploadedPersonImage}
-                  onStartCamera={() => void camera.startCamera()}
-                  onStopCamera={() => camera.stopCamera('stopped')}
-                  onSwitchCamera={() => void camera.switchCamera()}
-                  onSelectDevice={(id) => void camera.selectDevice(id)}
-                  onCaptureFrame={() => void handleCaptureFrame()}
-                  onRetake={handleRetake}
-                  onSwitchToUpload={() => handleSwitchMode('upload')}
-                />
-              ) : (
-                <ImageUploader
-                  image={uploadedPersonImage}
-                  onImageSelected={(url, file) => setUploadedPersonPhoto(url, file)}
-                  onImageRemoved={() => setUploadedPersonPhoto(null, null)}
-                />
-              )}
-            </DropTargetStage>
-          </div>
-
-          <GuidanceCard />
-        </div>
-
-        {/* Right Column: Selected Garment, Consent & Try This Look (4 cols on desktop) */}
-        <div className="lg:col-span-4 order-3 space-y-5">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="font-serif text-xl font-medium text-charcoal">
-                Selected Garment
-              </h2>
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsModalOpen(true)}
-                  disabled={products.length === 0}
-                  className="text-xs"
-                >
-                  <RefreshCw className="w-3 h-3 mr-1" />
-                  <span>Replace</span>
-                </Button>
-                {activeGarment && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRemoveGarment}
-                    aria-label="Remove garment"
-                    className="text-xs text-charcoal-muted hover:text-red-700"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {isCatalogLoading ? (
-              <Skeleton className="aspect-[4/5] w-full rounded-3xl" />
-            ) : activeGarment ? (
-              <div className="bg-white rounded-3xl p-5 border border-canvas-dark/60 shadow-sm space-y-4">
-                <div className="aspect-[4/4] bg-canvas-subtle rounded-2xl overflow-hidden p-4 flex items-center justify-center relative">
-                  <img
-                    src={activeGarment.imageUrl}
-                    alt={activeGarment.title}
-                    className="w-full h-full object-contain"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <Badge variant="secondary" className="bg-white/90 backdrop-blur shadow-xs text-[11px]">
-                      {activeGarment.categoryLabel}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <p className="text-xs text-charcoal-light uppercase font-semibold">
-                    {activeGarment.brand}
-                  </p>
-                  <h3 className="font-serif text-lg font-medium text-charcoal">
-                    {activeGarment.title}
-                  </h3>
-                  <p className="text-xs text-charcoal-muted">
-                    Color: {activeGarment.color} • Material: {activeGarment.material}
-                  </p>
-                </div>
-
-                <div className="pt-2 flex items-center justify-between border-t border-canvas-subtle text-xs">
-                  <span className="font-semibold text-charcoal text-base">${activeGarment.price}</span>
-                  <span className="text-emerald-700 font-medium flex items-center space-x-1">
-                    <Shirt className="w-3.5 h-3.5" />
-                    <span>2D Model Compatible</span>
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-3xl p-8 border border-dashed border-canvas-dark text-center space-y-2 text-xs text-charcoal-muted">
-                <Shirt className="w-7 h-7 mx-auto text-canvas-dark" />
-                <p>No garment selected. Drag a top onto the camera stage or click one from the panel.</p>
-              </div>
-            )}
-          </div>
-
-          {/* Mandatory Consent Checkbox */}
-          <div
-            className={`p-4 rounded-2xl border transition-all ${
-              consentError
-                ? 'border-red-400 bg-red-50/70'
-                : 'border-canvas-dark bg-white shadow-xs'
-            }`}
-          >
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={consentGiven}
-                onChange={(e) => {
-                  setConsentGiven(e.target.checked);
-                  if (e.target.checked) setConsentError(false);
-                }}
-                className="mt-1 h-4 w-4 rounded border-canvas-dark text-accent focus:ring-accent accent-accent cursor-pointer"
-              />
-              <div className="space-y-1 text-xs">
-                <span className="font-semibold text-charcoal block">
-                  Mandatory Processing Consent
-                </span>
-                <span className="text-charcoal-muted leading-relaxed block font-light">
-                  I confirm that I own this photograph or have explicit authorization to process it. I consent to private 2D diffusion image synthesis for virtual clothing preview.
-                </span>
-              </div>
-            </label>
-            {consentError && (
-              <div className="mt-2 text-xs text-red-600 font-medium flex items-center space-x-1">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>You must accept the consent agreement before submitting a try-on request.</span>
-              </div>
-            )}
-          </div>
-
-          {/* Submit Action Well */}
-          <div className="bg-canvas-subtle rounded-2xl p-5 border border-canvas-dark/60 space-y-3">
-            <div className="space-y-1">
-              <h4 className="font-serif text-base font-medium text-charcoal">
-                Try This Look
-              </h4>
-              <p className="text-xs text-charcoal-muted font-light leading-relaxed">
-                Runs asynchronous 2D AI try-on on your captured or uploaded image.
-              </p>
-            </div>
-
-            <Button
-              variant="accent"
-              size="lg"
-              disabled={!uploadedPersonFile || !activeGarment || isSubmitting}
-              isLoading={isSubmitting}
-              onClick={handleSubmitTryOn}
-              className="w-full shadow-md"
-            >
-              <span>{currentUser ? 'Try This Look' : 'Sign In to Try This Look'}</span>
-              <Sparkles className="w-4 h-4 ml-2" />
-            </Button>
-
-            {!uploadedPersonFile && (
-              <p className="text-[11px] text-center text-charcoal-light">
-                Capture a camera frame or upload a photo to enable AI generation.
-              </p>
-            )}
-          </div>
-        </div>
+        {/* Mode Selector Pill */}
+        <ModeSelector mode={mode} onModeChange={setMode} isGenerating={isSubmitting} />
       </div>
 
-      {/* Garment Selector Modal */}
-      <GarmentSelectorModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelect={(garment) => handleSelectOrDropGarment(garment, false)}
-      />
+      {/* Main Studio 3-Column Workspace */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8 items-start">
+        {/* ======================================================== */}
+        {/* LEFT DOCK: Model & Garment Selection (4 Columns)          */}
+        {/* ======================================================== */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Avatar Source Switcher */}
+          <div className="p-4 rounded-3xl bg-stone-900/60 backdrop-blur-xl border border-white/10 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-wider text-stone-300 font-medium">
+                1. Select Avatar / Person
+              </span>
+              <div className="flex rounded-xl p-0.5 bg-black/40 border border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setModelSource('roster')}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition ${
+                    modelSource === 'roster'
+                      ? 'bg-amber-500 text-stone-950 font-semibold'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  Model Roster
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModelSource('custom')}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition ${
+                    modelSource === 'custom'
+                      ? 'bg-amber-500 text-stone-950 font-semibold'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  My Photo / Camera
+                </button>
+              </div>
+            </div>
+
+            {modelSource === 'roster' ? (
+              <ModelPresetDock
+                models={STUDIO_MODELS}
+                selectedModelId={selectedModel.id}
+                onSelectModel={(m) => {
+                  setSelectedModel(m);
+                  setSelectedPoseId(m.poses[0].id);
+                  setActiveResultUrl(null);
+                }}
+                activePoseId={selectedPoseId}
+                onSelectPose={(pId) => {
+                  setSelectedPoseId(pId);
+                  setActiveResultUrl(null);
+                }}
+              />
+            ) : (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void camera.startCamera()}
+                    className="flex-1 text-xs border-white/20 text-stone-200"
+                  >
+                    <Camera className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Live Webcam</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const input = document.getElementById('custom-photo-file');
+                      if (input) input.click();
+                    }}
+                    className="flex-1 text-xs border-white/20 text-stone-200"
+                  >
+                    <Upload className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Upload Image</span>
+                  </Button>
+                </div>
+
+                <input
+                  id="custom-photo-file"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setUploadedPersonPhoto(url, file);
+                    }
+                  }}
+                />
+
+                {camera.cameraState === 'active' && (
+                  <div className="relative rounded-2xl overflow-hidden border border-white/20 aspect-[3/4]">
+                    <video
+                      ref={camera.videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-3 inset-x-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCaptureFrame}
+                        className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs uppercase tracking-wider rounded-xl transition shadow"
+                      >
+                        Capture Pose
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => camera.stopCamera()}
+                        className="px-3 py-2 bg-stone-900/80 text-stone-300 text-xs rounded-xl border border-white/10"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Studio Lighting Presets */}
+            <div className="pt-2 border-t border-white/5">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-stone-400 block mb-2">
+                Lighting Atmosphere
+              </span>
+              <div className="grid grid-cols-2 gap-1.5">
+                {LIGHTING_PRESETS.map((lp) => (
+                  <button
+                    key={lp.id}
+                    type="button"
+                    onClick={() => setActiveLighting(lp.id)}
+                    className={`flex items-center gap-2 p-2 rounded-xl text-left border transition ${
+                      activeLighting === lp.id
+                        ? 'border-amber-400/80 bg-amber-400/10 text-white'
+                        : 'border-white/5 bg-stone-950/40 text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    <span className="text-amber-300">{renderLightingIcon(lp.id)}</span>
+                    <div className="truncate">
+                      <p className="text-[11px] font-medium leading-none">{lp.label}</p>
+                      <p className="text-[9px] text-stone-500 mt-0.5">{lp.ambient}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Garment Catalog Dock */}
+          <div className="p-4 rounded-3xl bg-stone-900/60 backdrop-blur-xl border border-white/10 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-wider text-stone-300 font-medium">
+                2. Select Garment
+              </span>
+              <span className="text-[10px] text-stone-400 font-mono">
+                {products.length} catalog items
+              </span>
+            </div>
+
+            <GarmentSidebar
+              products={products}
+              selectedGarmentId={activeGarment?.id || null}
+              wishlistIds={wishlist}
+              onSelectGarment={(p) => {
+                setSelectedGarment(p);
+                setActiveResultUrl(null);
+              }}
+              onToggleWishlist={(id) => void toggleWishlist(id)}
+            />
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* CENTER STAGE: Interactive Decart-Style Motion Canvas (5 Cols) */}
+        {/* ======================================================== */}
+        <div className="lg:col-span-5 space-y-4">
+          <MotionStage
+            mode={mode}
+            personImageUrl={activePersonImageUrl}
+            garmentImageUrl={activeGarment?.imageUrl || null}
+            resultImageUrl={activeResultUrl}
+            isProcessing={isSubmitting}
+          />
+
+          {submitError && (
+            <div className="p-3.5 rounded-2xl bg-red-950/40 border border-red-500/30 text-xs text-red-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+              <span>{submitError}</span>
+            </div>
+          )}
+
+          {/* Processing Consent for custom uploaded photos */}
+          {modelSource === 'custom' && (
+            <div
+              className={`p-3 rounded-2xl border transition-all text-xs ${
+                consentError
+                  ? 'border-red-400 bg-red-500/10'
+                  : 'border-white/10 bg-stone-900/60 text-stone-300'
+              }`}
+            >
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentGiven}
+                  onChange={(e) => {
+                    setConsentGiven(e.target.checked);
+                    if (e.target.checked) setConsentError(false);
+                  }}
+                  className="mt-0.5 accent-amber-500 rounded"
+                />
+                <span className="text-[11px] text-stone-400">
+                  I consent to private 2D/video diffusion image synthesis on this portrait.
+                </span>
+              </label>
+            </div>
+          )}
+
+          {/* Big Neon Try-On Action Bar */}
+          <button
+            type="button"
+            disabled={isSubmitting || !activeGarment}
+            onClick={handleRunTryOn}
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:brightness-110 disabled:opacity-50 text-stone-950 font-bold uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2 group"
+          >
+            <Sparkles className="w-4 h-4 fill-stone-950 group-hover:scale-110 transition-transform" />
+            <span>
+              {isSubmitting
+                ? 'Synthesizing Look...'
+                : currentUser
+                ? `Synthesize ${mode === 'photo' ? 'Photo' : mode === 'turnaround' ? '360° Turnaround' : 'Catwalk Runway'}`
+                : 'Sign In to Synthesize Look'}
+            </span>
+          </button>
+        </div>
+
+        {/* ======================================================== */}
+        {/* RIGHT DOCK: Garment Specs, Sizing & Instant Bag (3 Cols)  */}
+        {/* ======================================================== */}
+        <div className="lg:col-span-3 space-y-5">
+          {activeGarment ? (
+            <div className="p-5 rounded-3xl bg-stone-900/60 backdrop-blur-xl border border-white/10 shadow-xl space-y-4">
+              <div className="aspect-[4/3] rounded-2xl bg-stone-950 border border-white/5 overflow-hidden p-3 flex items-center justify-center relative">
+                <img
+                  src={activeGarment.imageUrl}
+                  alt={activeGarment.title}
+                  className="w-full h-full object-contain filter drop-shadow-lg"
+                />
+                <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 border border-white/10 text-[10px] font-mono text-stone-300">
+                  {activeGarment.categoryLabel}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
+                  {activeGarment.brand}
+                </p>
+                <h3 className="text-base font-medium text-white mt-0.5 line-clamp-1">
+                  {activeGarment.title}
+                </h3>
+                <p className="text-xl font-mono font-bold text-stone-100 mt-1">
+                  ${activeGarment.price.toFixed(2)}
+                </p>
+              </div>
+
+              {/* Fabric & Material Physics */}
+              <div className="py-3 border-y border-white/5 space-y-2 text-xs text-stone-300">
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Fabric</span>
+                  <span className="font-medium text-stone-200">{activeGarment.material}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Silhouette</span>
+                  <span className="font-medium text-stone-200">{activeGarment.fit}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-500">Color Tone</span>
+                  <span className="font-medium text-stone-200">{activeGarment.color}</span>
+                </div>
+              </div>
+
+              {/* Sizing & Add to Bag */}
+              <div className="space-y-3 pt-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-400">Available Sizes</span>
+                  <span className="text-[10px] text-emerald-400 font-mono">In Stock</span>
+                </div>
+                <div className="flex gap-1.5">
+                  {['XS', 'S', 'M', 'L', 'XL'].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className="flex-1 py-1.5 text-xs font-mono font-medium rounded-lg border border-white/10 bg-stone-950/60 hover:border-amber-400 hover:text-white transition"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={isCartLoading}
+                    onClick={() => addToCart(activeGarment.id, 1, 'M')}
+                    className="flex-1 py-3 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-white font-medium text-xs uppercase tracking-wider transition flex items-center justify-center gap-2"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add To Shopping Bag</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleWishlist(activeGarment.id)}
+                    className={`p-3 rounded-xl border transition ${
+                      wishlist.includes(activeGarment.id)
+                        ? 'border-rose-500/50 bg-rose-500/10 text-rose-400'
+                        : 'border-white/10 bg-stone-950/60 text-stone-400 hover:text-white'
+                    }`}
+                    title={wishlist.includes(activeGarment.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        wishlist.includes(activeGarment.id) ? 'fill-rose-500 text-rose-500' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 rounded-3xl bg-stone-900/40 border border-white/5 text-center text-stone-500">
+              Select a garment from catalog
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

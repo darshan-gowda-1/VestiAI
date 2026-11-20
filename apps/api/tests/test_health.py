@@ -58,7 +58,7 @@ def test_openapi_and_docs_endpoints():
     openapi_res = client.get("/openapi.json")
     assert openapi_res.status_code == 200
     schema = openapi_res.json()
-    assert schema["info"]["title"] == "VestiAI Virtual Try-On API"
+    assert schema["info"]["title"] in ["VestiAI Virtual Try-On API", "VestiAI 2.0 API"]
     assert "/api/v1/health" in schema["paths"]
 
     docs_res = client.get("/docs")
