@@ -27,9 +27,9 @@ export const Navbar: React.FC = () => {
   return (
     <>
       {/* Top Banner Notice */}
-      <div className="bg-charcoal text-canvas px-4 py-1.5 text-center text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2">
-        <Sparkles className="w-3.5 h-3.5 text-accent" />
-        <span>VestiAI College Mini-Project • 2D Virtual Try-On for E-Commerce</span>
+      <div className="bg-[#170404] text-[#fffffc] px-4 py-1.5 text-center text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2">
+        <Sparkles className="w-3.5 h-3.5 text-[#fec6ff]" />
+        <span>Free during Beta • Real-time AI Virtual Try-On for Any Online Store</span>
       </div>
 
       {/* Main Navigation */}

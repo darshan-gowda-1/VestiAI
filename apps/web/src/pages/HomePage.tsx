@@ -1,154 +1,50 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  Sparkles,
   ArrowRight,
-  ShieldCheck,
   Shirt,
-  Camera,
   MousePointerClick,
   Heart,
   Globe,
   Chrome,
-  CheckCircle2,
-  Eye,
 } from 'lucide-react';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { AnywearHero } from '../components/anywear/AnywearHero';
+import { AnywearModal } from '../components/anywear/AnywearModal';
 
 export const HomePage: React.FC = () => {
   const { products } = useApp();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
+  // Auto-open modal if ?try=1 is in URL (matching anywear.decart.ai)
+  useEffect(() => {
+    if (searchParams.get('try') === '1') {
+      setIsDemoModalOpen(true);
+      searchParams.delete('try');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 4);
 
   return (
-    <div className="space-y-24 pb-24">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 sm:pt-20 lg:pt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            {/* Left Narrative */}
-            <div className="flex-1 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-accent-subtle text-accent text-xs font-semibold tracking-wide border border-accent/20">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>VestiAI 2.0 • Live Camera &amp; 2D AI Virtual Try-On</span>
-              </div>
+    <div className="space-y-20 pb-24">
+      {/* Decart Anywear Signature Split Stage Hero */}
+      <AnywearHero
+        products={products}
+        onOpenDemo={() => setIsDemoModalOpen(true)}
+      />
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-medium text-charcoal leading-[1.12]">
-                Try Any Look. <br className="hidden sm:inline" />
-                <span className="italic font-normal text-accent">Before You Buy.</span>
-              </h1>
-
-              <p className="text-base sm:text-lg text-charcoal-muted max-w-xl font-light leading-relaxed mx-auto lg:mx-0">
-                Explore fashion, see how it looks on you, and discover your next favorite outfit with AI-powered virtual try-on.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-wrap gap-4 items-center justify-center lg:justify-start">
-                <Link to="/try-on">
-                  <Button variant="primary" size="lg" className="shadow-md">
-                    <Camera className="w-4 h-4 mr-1.5" />
-                    <span>Start Virtual Try-On</span>
-                    <ArrowRight className="w-4 h-4 ml-1.5" />
-                  </Button>
-                </Link>
-                <Link to="/store">
-                  <Button variant="secondary" size="lg">
-                    <Shirt className="w-4 h-4 mr-1.5" />
-                    <span>Explore Styles</span>
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-charcoal-muted">
-                <div className="flex items-center space-x-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>User-controlled camera</span>
-                </div>
-                <div className="w-1 h-1 rounded-full bg-canvas-dark" />
-                <div className="flex items-center space-x-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Consent-first processing</span>
-                </div>
-                <div className="w-1 h-1 rounded-full bg-canvas-dark" />
-                <div className="flex items-center space-x-1.5">
-                  <Eye className="w-4 h-4 text-accent shrink-0" />
-                  <span>Before &amp; After comparison</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Product Demonstration Card */}
-            <div className="flex-1 w-full max-w-md lg:max-w-none">
-              <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-canvas-dark/60 relative overflow-hidden space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-canvas-subtle">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-semibold uppercase tracking-wider text-charcoal">
-                      Live Camera + Drag-and-Drop
-                    </span>
-                  </div>
-                  <Badge variant="accent" className="font-mono text-[10px]">2D AI Studio</Badge>
-                </div>
-
-                {/* 3-Panel Demonstration: Person -> Garment -> Generated Result */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-canvas-subtle rounded-2xl p-3 text-center space-y-2 border border-canvas-dark/40">
-                    <div className="aspect-[3/4] bg-white rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 gap-2">
-                      <Camera className="w-7 h-7 text-charcoal-muted" />
-                      <span className="text-[10px] text-charcoal-light">Webcam / Photo</span>
-                    </div>
-                    <p className="text-xs font-medium text-charcoal">1. Person</p>
-                  </div>
-
-                  <div className="bg-canvas-subtle rounded-2xl p-3 text-center space-y-2 border border-canvas-dark/40">
-                    <div className="aspect-[3/4] bg-white rounded-xl overflow-hidden flex items-center justify-center p-2">
-                      {products[0]?.imageUrl ? (
-                        <img
-                          src={products[0].imageUrl}
-                          alt={products[0].title}
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <Shirt className="w-8 h-8 text-canvas-dark" />
-                      )}
-                    </div>
-                    <p className="text-xs font-medium text-charcoal truncate">
-                      {products[0]?.title || '2. Garment'}
-                    </p>
-                  </div>
-
-                  <div className="bg-accent-subtle/60 rounded-2xl p-3 text-center space-y-2 border border-accent/30">
-                    <div className="aspect-[3/4] bg-white rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 gap-2">
-                      <Sparkles className="w-7 h-7 text-accent" />
-                      <span className="text-[10px] text-accent font-medium">AI Preview</span>
-                    </div>
-                    <p className="text-xs font-semibold text-charcoal">3. Result</p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-canvas-subtle/80 border border-canvas-dark/50 flex items-center justify-between gap-4">
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-semibold text-charcoal">
-                      Camera Mode + AI Try-On Mode
-                    </p>
-                    <p className="text-[11px] text-charcoal-light">
-                      Drag a top onto your camera frame, capture, and generate a realistic 2D visual preview.
-                    </p>
-                  </div>
-                  <Link to="/try-on" className="shrink-0">
-                    <Button variant="accent" size="sm" className="text-xs">
-                      Try Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Decart 3-Step Try-On Demo Modal */}
+      <AnywearModal
+        isOpen={isDemoModalOpen}
+        onClose={() => setIsDemoModalOpen(false)}
+        products={products}
+      />
 
       {/* 3-Step "How It Works" Section */}
       <section id="how-it-works" className="max-w-7xl mx-auto px-4 sm:px-6">
