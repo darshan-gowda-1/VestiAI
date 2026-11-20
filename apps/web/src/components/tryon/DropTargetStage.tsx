@@ -17,6 +17,10 @@ export const DropTargetStage: React.FC<DropTargetStageProps> = ({
   const [invalidDropMessage, setInvalidDropMessage] = useState<string | null>(null);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    // If dragging an image file from desktop, don't show the garment drop overlay
+    if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) {
+      return;
+    }
     e.preventDefault();
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = 'copy';
@@ -31,6 +35,12 @@ export const DropTargetStage: React.FC<DropTargetStageProps> = ({
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    // If a person image file is dropped, let the file uploader handle it
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setIsDragOver(false);
+      return;
+    }
+
     e.preventDefault();
     setIsDragOver(false);
 

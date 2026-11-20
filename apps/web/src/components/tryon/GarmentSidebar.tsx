@@ -118,7 +118,9 @@ export const GarmentSidebar: React.FC<GarmentSidebarProps> = ({
                   setDraggingId(null);
                   onDragStateChange?.(false);
                 }}
-                onClick={() => onSelectGarment(product)}
+                onClick={() => {
+                  onSelectGarment(product);
+                }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
@@ -128,10 +130,10 @@ export const GarmentSidebar: React.FC<GarmentSidebarProps> = ({
                   }
                 }}
                 aria-label={`Select ${product.title}`}
-                className={`group shrink-0 w-44 lg:w-full rounded-xl border p-2.5 cursor-grab active:cursor-grabbing transition-all flex flex-col lg:flex-row items-center gap-2.5 ${
+                className={`group shrink-0 w-44 lg:w-full rounded-xl border p-2.5 cursor-pointer active:scale-[0.99] transition-all flex flex-col lg:flex-row items-center gap-2.5 select-none ${
                   isSelected
-                    ? 'border-accent bg-accent-subtle/40 ring-1 ring-accent/40'
-                    : 'border-canvas-dark/60 bg-canvas-subtle/30 hover:border-charcoal/40 hover:bg-white'
+                    ? 'border-accent bg-accent-subtle/40 ring-2 ring-accent shadow-sm'
+                    : 'border-canvas-dark/60 bg-canvas-subtle/30 hover:border-accent/60 hover:bg-white'
                 } ${isDragging ? 'opacity-50 scale-[0.98]' : ''}`}
               >
                 <div className="w-full lg:w-14 h-24 lg:h-16 rounded-lg bg-white border border-canvas-dark/40 overflow-hidden shrink-0 flex items-center justify-center p-1 relative">
